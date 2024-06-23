@@ -1,0 +1,18 @@
+domain: rsg.fork.io
+access_key: ${SUBFORK_ACCESS_KEY}
+secret_key: ${SUBFORK_SECRET_KEY}
+auto_minimize: true
+static_folder: static
+template_folder: templates
+templates:
+  base_html:
+    file: base.html
+  about_html:
+    file: about.html
+    route: /about
+  index_html:
+    file: index.html
+    route: /
+  contact_html:
+    file: contact.html
+    route: /contact
