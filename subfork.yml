@@ -1,18 +1,23 @@
 domain: rsg.fork.io
+
+# enter site credentials here
 access_key: ${SUBFORK_ACCESS_KEY}
 secret_key: ${SUBFORK_SECRET_KEY}
-auto_minimize: true
-static_folder: static
+
+# template and static file folder paths
 template_folder: templates
+static_folder: static
+
+# page template definitions
 templates:
   base_html:
     file: base.html
-  about_html:
-    file: about.html
-    route: /about
   index_html:
     file: index.html
     route: /
+  about_html:
+    file: about.html
+    route: /about
   contact_html:
     file: contact.html
     route: /contact

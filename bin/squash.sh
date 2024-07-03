@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# image compression script using ffmpeg
+# simple image compression script using ffmpeg
 #
 # $ squash tmp/photos static/img 7
 #

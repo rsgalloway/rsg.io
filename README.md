@@ -1,6 +1,8 @@
 
 # RSG.IO
 
+Personal website built and hosted on [Subfork](https://subfork.com).
+
 ## Setup
 
 ```bash
@@ -9,9 +11,9 @@ $ source venv3/bin/activate
 $ pip install -r requirements.txt
 ```
 
-**Add subfork API keys to the environment**
+**Add Subfork API keys to the environment**
 
-**Subfork file size limit: 1MB**
+Compress image files using squash bash script:
 
 ```bash
 $ ./bin/squash.sh <input> <output> <level>
@@ -32,6 +34,6 @@ $ subfork run
 ## Deploy
 
 ```bash
-$ subfork deploy -c <comment>
+$ subfork deploy -c <comment> --release
 ```
 
