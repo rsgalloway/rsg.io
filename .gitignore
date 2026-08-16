@@ -5,6 +5,15 @@
 .vscode/
 build/
 dist/
+public/
+_site/
+_site_src/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+.bundle/
+vendor/
+vendor/bundle/
 static/photo/*
 __pycache__/
 .env

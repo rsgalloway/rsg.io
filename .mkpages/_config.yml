@@ -1,0 +1,10 @@
+title: "Ryan Galloway"
+description: "Engineering, open source, projects, and blog."
+markdown: kramdown
+permalink: pretty
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight

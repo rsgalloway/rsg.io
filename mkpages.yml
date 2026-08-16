@@ -1,0 +1,16 @@
+title: Ryan Galloway
+description: Engineering, open source, projects, and blog.
+theme: matrix
+navigation:
+  - label: Home
+    href: /
+  - label: Projects
+    href: /projects/
+  - label: Blog
+    href: /blog/
+  - label: Captain's Log
+    href: /captainslog/
+  - label: About
+    href: /about/
+  - label: GitHub
+    href: https://github.com/rsgalloway
