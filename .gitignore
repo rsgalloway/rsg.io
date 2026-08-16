@@ -21,3 +21,4 @@ venv*
 *.egg-info/
 tmp/
 *.zip
+.mkpages/
