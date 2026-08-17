@@ -15,6 +15,8 @@ featured: true
 order: 40
 ---
 
+Links: [site](https://snapfs.com) · [GitHub](https://github.com/snapfsio/)
+
 SnapFS is a place for exploring what lightweight snapshot workflows could feel like when they are treated as everyday engineering tools rather than specialized storage features.
 
 The project is still early, but the throughline is durability: repeatable state, inspectable changes, and calmer iteration loops.

@@ -12,5 +12,5 @@ This site is a place for longer engineering writing, project notes, and a runnin
 ## Elsewhere
 
 - [GitHub](https://github.com/rsgalloway)
-- [LinkedIn](https://www.linkedin.com/)
-- [Resume](https://rsg.io/resume/)
+- [LinkedIn](https://linkedin.com/in/rsgalloway)
+- [X/Twitter](https://x.com/rsgalloway)

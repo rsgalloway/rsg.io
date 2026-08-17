@@ -15,6 +15,8 @@ featured: true
 order: 30
 ---
 
+Links: [site](https://pyseq.dev) · [GitHub](https://github.com/rsgalloway/pyseq)
+
 `pyseq` works with numbered file sequences and the practical filesystem patterns that show up in rendering, media processing, and automation jobs.
 
 It stays useful by being dependable in scripts and pipelines where sequence detection and formatting need to be correct without much ceremony.

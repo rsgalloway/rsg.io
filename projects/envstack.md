@@ -15,6 +15,8 @@ featured: true
 order: 10
 ---
 
+Links: [site](https://envstack.dev) · [GitHub](https://github.com/rsgalloway/envstack)
+
 `envstack` explores a simple idea: environment configuration should be layered, explicit, and easy to inspect in both Python and shell workflows.
 
 The project focuses on predictable precedence rules, portable usage, and configuration that still feels manageable once a system grows beyond a single `.env` file.

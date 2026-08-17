@@ -4,7 +4,7 @@ title: Blog
 permalink: /blog/
 ---
 
-# Blog
+## Blog
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 
