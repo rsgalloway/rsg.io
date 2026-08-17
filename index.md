@@ -12,9 +12,9 @@ I build durable Python tooling, maintain open source projects, and write about t
 
 ### Latest Writing
 
+- [A Shell Command Is Not an Argument List](/blog/a-shell-command-is-not-an-argument-list/)
+- [mkpages is on PyPI](/blog/mkpages-on-pypi/)
 - [Why ENVPATH precedence works left-to-right](/blog/envpath-precedence/)
-- [Notes on a small package registry for distman](/blog/distman-registry-notes/)
-- [Building small open source sites without a framework](/blog/building-small-open-source-sites/)
 
 ### Captain's Log
 
