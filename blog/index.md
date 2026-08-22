@@ -8,6 +8,7 @@ permalink: /blog/
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 
+- 2026-08-22: [The File I Didn't Know Was an API](/blog/the-file-i-didnt-know-was-an-api/)
 - 2026-08-16: [A Shell Command Is Not an Argument List](/blog/a-shell-command-is-not-an-argument-list/)
 - 2026-08-16: [mkpages is on PyPI](/blog/mkpages-on-pypi/)
 - 2026-08-16: [Why ENVPATH precedence works left-to-right](/blog/envpath-precedence/)
