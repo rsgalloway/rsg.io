@@ -16,6 +16,10 @@ released mkpages 0.4.1 after adding PDF, DOCX, and rendered-site ZIP exports in 
 
 shipped distman 0.8.4 with ad-hoc --source / --dest deployments that work without a dist.json, after migrating the distman docs site to mkpages
 
+### Captain’s log, Aug 21, 2026
+
+released mkpages 0.3.1 with built-in social preview cards, Open Graph/Twitter metadata, and GitHub Pages-aware image URLs
+
 ### Captain’s log, Aug 19, 2026
 
 restored pyseq’s Sphinx API docs and objects.inv for Intersphinx compatibility while keeping the main docs site built with mkpages
