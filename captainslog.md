@@ -8,6 +8,14 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Aug 27, 2026
+
+released mkpages 0.4.1 after adding PDF, DOCX, and rendered-site ZIP exports in 0.4.0, plus the new Gridline theme and nested documentation card panels
+
+### Captain’s log, Aug 25, 2026
+
+shipped distman 0.8.4 with ad-hoc --source / --dest deployments that work without a dist.json, after migrating the distman docs site to mkpages
+
 ### Captain’s log, Aug 19, 2026
 
 restored pyseq’s Sphinx API docs and objects.inv for Intersphinx compatibility while keeping the main docs site built with mkpages

@@ -12,10 +12,10 @@ I build durable Python tooling, maintain open source projects, and write about t
 
 ### Latest Writing
 
+- [AI Agents Are Becoming Filesystem Workloads](/blog/ai-agents-are-becoming-filesystem-workloads/)
 - [The File I Didn't Know Was an API](/blog/the-file-i-didnt-know-was-an-api/)
 - [A Shell Command Is Not an Argument List](/blog/a-shell-command-is-not-an-argument-list/)
 - [mkpages is on PyPI](/blog/mkpages-on-pypi/)
-- [Why ENVPATH precedence works left-to-right](/blog/envpath-precedence/)
 
 ### Captain's Log
 
