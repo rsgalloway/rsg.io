@@ -12,10 +12,10 @@ I build durable Python tooling, maintain open source projects, and write about t
 
 ### Latest Writing
 
+- [The Path Is Not the File](/blog/the-path-is-not-the-file/)
 - [Your .env File Is Not the Configuration](/blog/your-env-file-is-not-the-configuration/)
 - [AI Agents Are Becoming Filesystem Workloads](/blog/ai-agents-are-becoming-filesystem-workloads/)
 - [The File I Didn't Know Was an API](/blog/the-file-i-didnt-know-was-an-api/)
-- [A Shell Command Is Not an Argument List](/blog/a-shell-command-is-not-an-argument-list/)
 
 ### Captain's Log
 

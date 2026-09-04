@@ -8,6 +8,7 @@ permalink: /blog/
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 
+- 2026-09-02: [The Path Is Not the File](/blog/the-path-is-not-the-file/)
 - 2026-08-31: [Your .env File Is Not the Configuration](/blog/your-env-file-is-not-the-configuration/)
 - 2026-08-28: [AI Agents Are Becoming Filesystem Workloads](/blog/ai-agents-are-becoming-filesystem-workloads/)
 - 2026-08-22: [The File I Didn't Know Was an API](/blog/the-file-i-didnt-know-was-an-api/)
