@@ -8,6 +8,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Sep 10, 2026
+
+pushing Subfork toward beta with a clearer model: fork-to-run graphs, authenticated API execution, BYO API keys, agent/MCP access, and a growing set of graph ideas spanning live data, visualization, automation, and generative media.
+
 ### Captain’s log, Aug 27, 2026
 
 released mkpages 0.4.1 after adding PDF, DOCX, and rendered-site ZIP exports in 0.4.0, plus the new Gridline theme and nested documentation card panels
