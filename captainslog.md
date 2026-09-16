@@ -8,6 +8,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Sep 14, 2026
+
+Subfork started as an experiment in “forkable” websites. Now the underlying idea is becoming explicit: expose the DAG beneath those sites as a first-class, granular programming model, where nodes can be composed, connected, forked, and executed independently. The website is becoming just one possible output of the graph.
+
 ### Captain’s log, Sep 10, 2026
 
 pushing Subfork toward beta with a clearer model: fork-to-run graphs, authenticated API execution, BYO API keys, agent/MCP access, and a growing set of graph ideas spanning live data, visualization, automation, and generative media.
