@@ -12,6 +12,7 @@ I build durable Python tooling, maintain open source projects, and write about t
 
 ### Latest Writing
 
+- [v042 Is Not a Data Model: Multivariate Versioning in VFX Pipelines](/blog/v042-is-not-a-data-model/)
 - [The Path Is Not the File](/blog/the-path-is-not-the-file/)
 - [Your .env File Is Not the Configuration](/blog/your-env-file-is-not-the-configuration/)
 - [AI Agents Are Becoming Filesystem Workloads](/blog/ai-agents-are-becoming-filesystem-workloads/)
