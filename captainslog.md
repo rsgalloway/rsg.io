@@ -8,6 +8,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Sep 18, 2026
+
+Subfork moved into real account/auth setup: wired up GitHub OAuth for Subfork and started configuring Google sign-in, shifting the project from mostly product/graph architecture into the less glamorous but very real work of making it usable by outside people.
+
 ### Captain’s log, Sep 14, 2026
 
 Subfork started as an experiment in “forkable” websites. Now the underlying idea is becoming explicit: expose the DAG beneath those sites as a first-class, granular programming model, where nodes can be composed, connected, forked, and executed independently. The website is becoming just one possible output of the graph.
