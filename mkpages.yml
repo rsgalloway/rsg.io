@@ -1,6 +1,6 @@
 title: Ryan Galloway
 description: Engineering, open source, projects, and blog.
-theme: matrix
+theme: pulsar
 navigation:
   - label: Home
     href: /

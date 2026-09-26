@@ -8,6 +8,7 @@ permalink: /blog/
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 
+- 2026-09-26: [I Started With Forkable Websites. The Interesting Part Was the Graph.](/blog/i-started-with-forkable-websites/)
 - 2026-09-23: [Your Configuration Should Not Contain Two Truths](/blog/your-configuration-should-not-contain-two-truths/)
 - 2026-09-18: [v042 Is Not a Data Model: Multivariate Versioning in VFX Pipelines](/blog/v042-is-not-a-data-model/)
 - 2026-09-02: [The Path Is Not the File](/blog/the-path-is-not-the-file/)
