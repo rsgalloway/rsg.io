@@ -8,6 +8,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Oct. 6, 2026
+
+Opened [subfork.com](https://subfork.com) to public signups. After months of building the graph engine, people can finally create accounts, build and fork graphs, and experiment with Subfork themselves. Still early, but it's nice to move from building the platform to seeing what people might build with it.
+
 ### Captain’s log, Sep 18, 2026
 
 Subfork moved into real account/auth setup: wired up GitHub OAuth for Subfork and started configuring Google sign-in, shifting the project from mostly product/graph architecture into the less glamorous but very real work of making it usable by outside people.
