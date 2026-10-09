@@ -1,0 +1,194 @@
+# Dark Castle Personal Website — Technical Plan
+
+Status: Initial implementation specification (2026-10-09)
+
+## Vision
+A full-screen, interactive, monochrome personal website inspired by the atmosphere of the 1986 Macintosh game *Dark Castle*. The site is a static website first: exploration enhances navigation but never gates content. The approved landing-page visual reference features a tall, ominous, nearly black castle tower silhouetted against a large moon, a tiny adventurer at its entrance, gothic 'Dark Castle' lettering, and restrained 1-bit dithering.
+
+## Non-negotiable requirements
+- Preserve existing public article and Captain's Log URLs; audit routes before any migration, use redirects only when necessary.
+- Every content page and room can be loaded directly without first entering the castle.
+- Maintain Markdown + front matter authoring via the existing mkpages/Jekyll pipeline.
+- All required content is accessible without Canvas or JavaScript; HTML navigation is semantic and keyboard accessible.
+- Full-screen castle presentation, no default Macintosh window frame; 1-bit black/white pixel art and nearest-neighbor scaling.
+- No floating labels in the Great Hall. Use subtle hover/focus affordances and accessible names.
+- Clicking a hotspot triggers a brief optional character movement and interaction animation; it must never require platforming or precise controls.
+- Respect prefers-reduced-motion; provide skip and immediate navigation behavior.
+- Use original artwork/sounds evocative of the era, not copied game assets or logo artwork.
+
+## MVP scope
+1. Exterior title scene at `/` with 'Dark Castle' title, looming tower, moon, small protagonist, and a subtle enter prompt (possibly delayed).
+2. Great Hall at `/castle/hall/` with architectural hotspots and a journal on a lectern.
+3. Captain's Log index at its existing canonical URL; journal hotspot animates character approach/open, then navigates there.
+4. One existing Captain's Log entry rendered from Markdown and reachable by its original URL.
+5. Browser back/forward and reload work on all routes.
+
+Out of scope for MVP: Finder simulation, sound, keyboard platforming, additional explorable rooms, accounts, backend services, complex pathfinding.
+
+## Architecture
+
+```text
+Markdown + front matter
+        |
+    mkpages / Jekyll build
+        |----------------------------|
+        v                            v
+ Static HTML pages             Generated site index (JSON)
+        |                            |
+        |                      Scene / hotspot manifests
+        |                            |
+        +---------- Static host -----+
+                        |
+                  Browser client
+               HTML content + Canvas
+```
+
+- Keep the content pipeline unchanged initially. Use Jekyll layouts/includes and optional generated JSON for scene metadata and latest posts.
+- Build the castle as a small standalone TypeScript/JavaScript module; no full game engine unless a prototype demonstrates a need.
+- Use HTML links for each hotspot, layered over or adjacent to Canvas as appropriate. Canvas draws scenes and animations, while the DOM provides semantic navigation and fallback.
+- Prefer regular document navigation to content pages for robust deep links; the scene animation can delay navigation briefly, with a timeout/skip path.
+- The scene module reads a declarative manifest: background assets, logical dimensions, spawn point, hotspot geometry, destination URL, approach point, and animation sequence.
+- No server-side runtime is required; deploy the generated static output to existing hosting.
+
+## Suggested source layout
+
+```text
+assets/darkcastle/
+  scenes/exterior.png
+  scenes/hall.png
+  sprites/hero.png
+  scripts/engine.ts
+  styles/castle.css
+  manifests/exterior.json
+  manifests/hall.json
+_layouts/castle.html
+_layouts/default.html
+_posts/...
+```
+
+Adapt paths to actual mkpages/Jekyll conventions after inspecting the repository; do not assume the above tree already exists.
+
+## Scene manifest sketch
+
+```json
+{
+  "id": "hall",
+  "logicalSize": [512, 342],
+  "background": "/assets/darkcastle/scenes/hall.png",
+  "character": {"spawn": [90, 240]},
+  "hotspots": [
+    {
+      "id": "captains-log",
+      "label": "Captain's Log",
+      "bounds": [280, 150, 70, 65],
+      "approach": [270, 225],
+      "action": "open-book",
+      "href": "<existing-canonical-captains-log-url>"
+    }
+  ]
+}
+```
+
+The coordinates and URLs above are illustrative placeholders, not final assets or route decisions.
+
+## Rendering and responsive behavior
+- Prototype at a 512×342 logical scene resolution to echo the original Macintosh display; evaluate actual sprite readability before locking it.
+- Use `image-rendering: pixelated` and integer scaling where feasible; on widescreen displays, compose or extend backgrounds rather than stretch them non-uniformly.
+- Keep UI text in accessible HTML rather than baking critical navigation text into bitmap art.
+- Provide an alternate simple HTML index on small screens and where pointer precision is limited, while preserving the castle visually when practical.
+- Limit animation work while tab is hidden; avoid large continuous effects.
+
+## Interaction sequence
+1. Exterior loads as a static image immediately, with progressive enhancement once scripts initialize.
+2. Clicking the entrance triggers character approach, door-open frames, then navigates to `/castle/hall/`.
+3. Clicking the journal in the hall triggers approach, book-open frames, then navigates to the Captain's Log index.
+4. Directly opening the Captain's Log URL renders readable content immediately with no animation.
+5. Browser history, refresh, keyboard focus, and reduced-motion paths are tested.
+
+## Later phase: Quit Game / Finder
+- Hidden `⌘Q` (and equivalent non-Mac shortcut or discoverable menu) exits the castle to a simulated monochrome Finder.
+- Finder is an alternate static-content browser; it does not replace canonical page URLs.
+- Relaunching Dark Castle returns to the last visited room (client-side state, with sensible fallback).
+- Keep Finder implementation outside MVP but reserve a top-level presentation-mode boundary in the frontend architecture.
+
+## Acceptance criteria
+- `mkpages`/Jekyll build produces a fully static deployable site.
+- Existing content URLs resolve unchanged, including direct loads and browser back/forward.
+- Exterior and hall render sharply in black and white with no required game controls.
+- Entrance and journal hotspots work with mouse, touch, keyboard, and screen readers.
+- Reduced-motion users reach destinations immediately or with minimal effects.
+- Content remains reachable when JavaScript is disabled.
+- No third-party copyrighted game assets are bundled.
+
+## First Codex work order
+1. Inspect current repository, mkpages invocation, Jekyll layouts, and existing URL structure; report compatibility constraints before modifying routes.
+2. Scaffold a small standalone castle scene component and declarative manifest loader.
+3. Build an exterior-to-hall navigation spike using placeholder original 1-bit assets, then connect a journal hotspot to the existing Captain's Log index.
+4. Validate static build, deep links, no-JS fallback, keyboard navigation, and reduced motion.
+5. Keep art replacement separate from interaction logic so final hand-authored sprites can be swapped in later.
+
+## Open design decisions
+- Exact original-art production workflow and sprite-sheet dimensions.
+- Whether exterior title remains fixed or animates on initial load.
+- How the hall visually indicates hotspots without floating labels.
+- Whether articles use a restrained themed layout or a more elaborate manuscript motif.
+
+
+## Implementation decisions — October 9, 2026
+
+- Work on `dark-castle-redesign`. No commits until Ryan has reviewed. Any later
+  authorized commits use a single-line message and no attribution trailers.
+- Keep mkpages and Jekyll. Dark Castle is a repository-local design, not a new
+  bundled mkpages theme. `theme.css`, `_layouts/castle.html`,
+  `_layouts/article.html`, `_includes/castle-head.html`, `_data/castle.json`, and
+  `assets/darkcastle/` are the sources; `.mkpages/` and `_site/` are generated.
+- mkpages copies custom layouts, but regenerates `default.html`. Use named
+  custom layouts and select them in front matter; no mkpages update required.
+- Captain’s Log stays authored in `captainslog.md`. A local build wrapper splits
+  entries at level-three headings into five entries per static page. The latest
+  entries remain at `/captainslog/`; older pages use `/captainslog/page/N/`.
+  Entries do not get individual page URLs. Page numbers shift as entries are added.
+- Retain all article, project, about, and index permalinks. Add `/castle/hall/`.
+- Use full-screen artwork for exterior and hall; no desktop window frames.
+  Use a restrained light reading surface for content pages. Existing content
+  and project metadata remain intact. The original home introduction and project
+  cards remain accessible as `/castle/directory/`.
+- Artwork is original generated monochrome scene art. Navigation labels and
+  titles are HTML. Hotspots are real links rendered from the same manifest that
+  supplies optional character movement. No Canvas or JavaScript is required.
+- Use an ordinary static image and DOM sprite rather than Canvas for the MVP;
+  there is no continuous render loop. Motion is short, skippable, and disabled
+  for reduced-motion preferences. The map is a native HTML details element.
+- Stage only public source files before mkpages runs, keeping reference images,
+  local temporary files, build scripts, and design documents out of the site.
+- Publish remains the existing GitHub Pages workflow. No deployment is requested
+  as part of this local implementation/review.
+
+## Local build and review
+
+Run `python .github/scripts/build_site.py --render`. This runs Jekyll from
+inside `.mkpages/`, avoiding a layout path issue in local Jekyll 3.8.
+Serve `_site` with `python -m http.server 4000 --directory _site`.
+Rerun the build after editing; plain `mkpages build .` does not paginate
+Captain’s Log or exclude local reference files.
+
+Artwork can be swapped by updating the image paths and hotspot coordinates in
+`_data/castle.json`; scene logic does not depend on a particular illustration.
+
+The build pins mkpages 0.4.1, the inspected local version, for reproducibility.
+UnifrakturCook is vendored under its SIL Open Font License for the HTML title.
+The balcony doors navigate immediately because the illustrated hall has no
+continuous path from the foreground floor to the balcony. Lower-floor doors
+and the journal have brief approach animations.
+
+## MVP verification
+
+- Static build: 32 pages, including the exterior, hall, preserved home directory,
+  and three Captain’s Log pages containing all 11 entries exactly once.
+- Python regression suite checks existing public permalinks, all generated local
+  links/assets/fragments, pagination boundaries, and fenced-code handling.
+- Chromium checks cover entrance/journal navigation, keyboard activation, history
+  and reload, reduced motion, JavaScript disabled, and mobile overflow.
+- Desktop and mobile screenshots inspected during implementation.
+- Original generated scene PNGs and authored SVG character poses are separate
+  from navigation logic. This is an initial art/interaction pass for review.

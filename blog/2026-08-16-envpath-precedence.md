@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Why ENVPATH precedence works left-to-right"
 date: 2026-08-16 09:00:00 -0700
 permalink: /blog/envpath-precedence/

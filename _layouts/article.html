@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>{% include castle-head.html %}</head>
+<body class="reading-page">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="reading-header">
+    <a class="wordmark" href="{{ '/castle/hall/' | relative_url }}">rsg.io <span>/ Dark Castle</span></a>
+    {% include castle-map.html %}
+  </header>
+  <main class="reading-shell" id="content">
+    <div class="reading-breadcrumb"><a href="{{ '/castle/hall/' | relative_url }}">← Great Hall</a><span>{% if page.url contains '/blog/' %}The Library{% elsif page.url contains '/projects/' %}The Workshop{% elsif page.url contains '/captainslog/' %}The Journal{% elsif page.url contains '/about/' %}The Observatory{% else %}The Directory{% endif %}</span></div>
+    <article class="prose">
+      <header class="article-heading">
+        <p class="eyebrow">Ryan Galloway / {% if page.log_page %}Field notes{% else %}Engineering & exploration{% endif %}</p>
+        <h1>{{ page.title | escape }}</h1>
+        {% if page.date %}<p class="article-date">{{ page.date | date: '%B %-d, %Y' }}</p>{% endif %}
+        {% if page.log_page %}<p class="article-date">Page {{ page.log_page }} of {{ page.log_pages }}</p>{% endif %}
+      </header>
+      {{ content }}
+    </article>
+    {% if page.log_page %}
+    <nav class="pagination" aria-label="Captain’s Log pages">
+      {% if page.log_previous %}<a rel="prev" href="{{ page.log_previous | relative_url }}">← Newer entries</a>{% else %}<span>Latest entries</span>{% endif %}
+      <span>{{ page.log_page }} / {{ page.log_pages }}</span>
+      {% if page.log_next %}<a rel="next" href="{{ page.log_next | relative_url }}">Older entries →</a>{% else %}<span>Beginning of the log</span>{% endif %}
+    </nav>
+    {% endif %}
+    <footer class="reading-footer"><a href="{{ '/castle/hall/' | relative_url }}">Return to the hall</a><span>Same castle. New stories.</span><a href="https://github.com/rsgalloway">GitHub ↗</a></footer>
+  </main>
+</body>
+</html>

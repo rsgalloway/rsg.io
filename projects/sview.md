@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: sview
 permalink: /projects/sview/
 slug: sview

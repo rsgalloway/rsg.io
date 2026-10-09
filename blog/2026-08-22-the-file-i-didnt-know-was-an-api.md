@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "The File I Didn't Know Was an API"
 date: 2026-08-22
 description: "A documentation migration removed a machine-readable file I didn't know anyone used—and exposed a hidden compatibility contract."

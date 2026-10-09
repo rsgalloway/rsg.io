@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: subfork
 permalink: /projects/subfork/
 slug: subfork

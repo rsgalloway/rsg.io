@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: envstack
 permalink: /projects/envstack/
 slug: envstack

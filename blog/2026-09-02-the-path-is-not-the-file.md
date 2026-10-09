@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "The Path Is Not the File"
 date: 2026-09-02
 description: "Paths tell you where a file is. They do not reliably tell you what it is. That distinction matters for deduplication, caching, indexing, backups, and AI workloads."

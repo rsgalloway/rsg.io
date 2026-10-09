@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: distman
 permalink: /projects/distman/
 slug: distman

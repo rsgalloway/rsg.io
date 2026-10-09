@@ -1,0 +1,77 @@
+{
+  "exterior": {
+    "width": 1536,
+    "height": 1024,
+    "image": "/assets/darkcastle/scenes/exterior.png",
+    "description": "A moon rises behind a dark fortress. A winding path leads to a small arched entrance.",
+    "spawn": [78, 89],
+    "hotspots": [
+      {
+        "id": "entrance",
+        "label": "Enter the Great Hall",
+        "href": "/castle/hall/",
+        "bounds": [69, 49, 8, 12],
+        "approach": [72.5, 59],
+        "action": "open-door",
+        "path": [
+          [71, 82],
+          [75, 76],
+          [67, 71],
+          [76, 65],
+          [72.5, 59]
+        ]
+      }
+    ]
+  },
+  "hall": {
+    "width": 1536,
+    "height": 1024,
+    "image": "/assets/darkcastle/scenes/hall.png",
+    "description": "A vaulted stone hall with moonlit windows, arched doors, and an open journal on a central lectern.",
+    "spawn": [37, 85],
+    "hotspots": [
+      {
+        "id": "journal",
+        "label": "Read Captain\u2019s Log",
+        "href": "/captainslog/",
+        "bounds": [43, 65, 14, 20],
+        "approach": [44, 85],
+        "action": "open-book"
+      },
+      {
+        "id": "library",
+        "label": "Library \u2014 writing",
+        "href": "/blog/",
+        "bounds": [12, 56, 11, 28],
+        "approach": [18, 84],
+        "action": "open-door"
+      },
+      {
+        "id": "workshop",
+        "label": "Workshop \u2014 projects",
+        "href": "/projects/",
+        "bounds": [77, 56, 11, 28],
+        "approach": [82, 84],
+        "action": "open-door"
+      },
+      {
+        "id": "observatory",
+        "label": "Observatory \u2014 about Ryan",
+        "href": "/about/",
+        "bounds": [77, 12, 9, 18],
+        "approach": [82, 43],
+        "action": "open-door",
+        "immediate": true
+      },
+      {
+        "id": "gate",
+        "label": "Return to the castle gate",
+        "href": "/",
+        "bounds": [14, 12, 9, 18],
+        "approach": [22, 43],
+        "action": "open-door",
+        "immediate": true
+      }
+    ]
+  }
+}

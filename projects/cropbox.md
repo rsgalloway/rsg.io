@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: cropbox
 permalink: /projects/cropbox/
 slug: cropbox

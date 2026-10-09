@@ -4,16 +4,16 @@ Personal site for `rsg.io`, authored as a small `mkpages` content tree and deplo
 
 ## Local preview
 
-Build the site into `.mkpages`:
+Generate `.mkpages/` and render the finished HTML into `_site/`:
 
 ```bash
-mkpages build .
+python .github/scripts/build_site.py --render
 ```
 
 Serve the previously built output:
 
 ```bash
-mkpages serve
+python -m http.server 4000 --directory _site
 ```
 
 The site will be available at `http://127.0.0.1:4000`.
@@ -75,3 +75,32 @@ tags:
 ## Deployment
 
 GitHub Pages deployment runs automatically on push to `master` or `main` using `.github/workflows/pages.yml`.
+
+## Dark Castle development
+
+The repository-local theme uses `theme.css`, named layouts in `_layouts/`,
+shared includes in `_includes/`, and original artwork and scripts under
+`assets/darkcastle/`. `_data/castle.json` controls scene images, hotspot bounds,
+and optional character paths. Coordinates are percentages of the scene image.
+
+The log remains one authored file. The build wrapper generates five entries per
+page at `/captainslog/` and `/captainslog/page/N/`. Do not hand-edit `.mkpages/`
+or `_site/`. The wrapper also keeps private temporary/reference files out of
+the public build. Rerun the build command after each edit.
+
+See [design decisions](design/dark-castle.md). Run build validation with
+`python -m unittest discover -s .github/scripts -p 'test_*.py'`.
+
+This branch is for review: no commits until Ryan has reviewed. Later authorized
+commits must have single-line messages and no attribution trailers.
+
+Optional browser checks use `.github/scripts/test_browser.cjs`. With Playwright
+installed in your tooling environment, serve the site and run:
+
+```bash
+node .github/scripts/test_browser.cjs
+```
+
+Set `CASTLE_BROWSER` to a system Chromium/Chrome executable if needed,
+`CASTLE_PREVIEW_URL` to override port 4000, and `CASTLE_SCREENSHOT_DIR` to save
+review screenshots. Playwright is test tooling only, not a site dependency.

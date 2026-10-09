@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Notes on a small package registry for distman"
 date: 2026-08-12 08:15:00 -0700
 permalink: /blog/distman-registry-notes/

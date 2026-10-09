@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "v042 Is Not a Data Model: Multivariate Versioning in VFX Pipelines"
 date: 2026-09-18
 description: "VFX files rarely vary along only one axis. A rigorous model separates revisions from variants, representations, dependencies, and immutable artifacts."

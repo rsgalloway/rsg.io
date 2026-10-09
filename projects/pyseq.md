@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: pyseq
 permalink: /projects/pyseq/
 slug: pyseq

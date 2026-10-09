@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "I Started With Forkable Websites. The Interesting Part Was the Graph."
 date: 2026-09-26
 description: "Subfork started as an experiment in forkable websites. Pulling that idea apart eventually exposed something more general underneath: a graph of small, composable pieces that can be forked, connected, and executed independently."

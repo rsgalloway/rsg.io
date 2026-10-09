@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Your Configuration Should Not Contain Two Truths"
 date: 2026-09-23
 description: "Configuration precedence and variable expansion are one resolution problem, not two independent phases."

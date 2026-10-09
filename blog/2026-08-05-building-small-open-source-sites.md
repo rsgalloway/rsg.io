@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Building small open source sites without a framework"
 date: 2026-08-05 07:30:00 -0700
 permalink: /blog/building-small-open-source-sites/
