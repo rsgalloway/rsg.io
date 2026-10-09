@@ -67,7 +67,6 @@ summary:focus-visible {
 .skip-link:focus {
   transform: translateY(0);
 }
-.scene-header,
 .reading-header {
   position: relative;
   z-index: 10;
@@ -149,22 +148,26 @@ summary:focus-visible {
   margin: 0 0 14px;
 }
 .castle-page {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
 }
 .castle-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .scene {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   isolation: isolate;
   aspect-ratio: var(--scene-ratio);
-  width: min(100%, calc((100svh - 156px) * 1.5));
-  margin: auto;
+  width: max(100vw, 150svh);
+  height: max(100svh, 66.6667vw);
+  transform: translate(-50%, -50%);
   overflow: hidden;
   background: #000;
 }
@@ -173,8 +176,84 @@ summary:focus-visible {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   image-rendering: pixelated;
+}
+.scene-menu {
+  position: fixed;
+  top: 18px;
+  right: 24px;
+  z-index: 20;
+  padding: 0 12px;
+  background: #000;
+  border: 1px solid #fff;
+}
+.scene-menu .castle-map nav {
+  top: 44px;
+}
+.scene-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.moon-glow {
+  position: absolute;
+  top: 3%;
+  left: 73%;
+  width: 20%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 5vw rgba(255, 255, 255, 0.28);
+  mix-blend-mode: screen;
+  animation: moon-breathe 8s steps(8, end) infinite alternate;
+}
+.ambient-cloud {
+  position: absolute;
+  left: -34%;
+  width: 31%;
+  height: 10%;
+  opacity: 0.16;
+  background-image: radial-gradient(circle, #fff 0 1px, transparent 1.5px);
+  background-size: 5px 5px;
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    #000 8%,
+    rgba(0, 0, 0, 0.85) 38%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(
+    ellipse at center,
+    #000 8%,
+    rgba(0, 0, 0, 0.85) 38%,
+    transparent 72%
+  );
+  animation: cloud-drift 46s linear infinite;
+}
+.ambient-cloud-one {
+  top: 10%;
+}
+.ambient-cloud-two {
+  top: 28%;
+  width: 24%;
+  opacity: 0.11;
+  animation-duration: 63s;
+  animation-delay: -31s;
+}
+@keyframes moon-breathe {
+  from {
+    opacity: 0.38;
+  }
+  to {
+    opacity: 0.72;
+  }
+}
+@keyframes cloud-drift {
+  to {
+    transform: translateX(440%);
+  }
 }
 .title-block {
   position: absolute;
@@ -202,10 +281,6 @@ summary:focus-visible {
   margin: 28px 0 20px;
   letter-spacing: 0.1em;
 }
-.title-note {
-  font-size: clamp(8px, 0.9vw, 13px);
-  line-height: 1.8;
-}
 .hero {
   position: absolute;
   width: 2.1%;
@@ -213,11 +288,11 @@ summary:focus-visible {
   image-rendering: pixelated;
   transform: translate(-50%, -100%);
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
 }
 .hotspot {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   text-decoration: none;
   border: 2px solid transparent;
   border-radius: 45% 45% 0 0;
@@ -242,7 +317,7 @@ summary:focus-visible {
   bottom: 6%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 4;
+  z-index: 5;
   text-decoration: none;
   white-space: nowrap;
   letter-spacing: 0.08em;
@@ -255,32 +330,6 @@ summary:focus-visible {
   margin: 0 15px;
 }
 .enter-prompt:hover {
-  text-decoration: underline;
-}
-.scene-caption {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 13px 3.5vw;
-  border-top: 1px solid #fff;
-  font-size: 10px;
-  letter-spacing: 0.025em;
-}
-.scene-caption span span {
-  margin: 0 12px;
-}
-.plain-navigation {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px 32px;
-  padding: 14px 20px;
-  font-size: 11px;
-}
-.plain-navigation a {
-  text-decoration: none;
-}
-.plain-navigation a:hover {
   text-decoration: underline;
 }
 .travel-status {
@@ -465,7 +514,6 @@ summary:focus-visible {
   }
 }
 @media (max-width: 700px) {
-  .scene-header,
   .reading-header {
     min-height: 56px;
     padding: 0 20px;
@@ -474,19 +522,10 @@ summary:focus-visible {
     font-size: 10px;
     margin-left: 7px;
   }
-  .scene {
-    width: 100%;
-    margin: auto 0;
-  }
-  .castle-main {
-    justify-content: center;
-  }
-  .scene-caption {
-    font-size: 9px;
-    padding: 14px 20px;
-  }
-  .interaction-hint {
-    display: none;
+  .scene-menu {
+    top: 12px;
+    right: 12px;
+    padding: 0 8px;
   }
   .title-block {
     top: 12%;
@@ -505,9 +544,6 @@ summary:focus-visible {
     margin: 16px 0 10px;
     font-size: 13px;
   }
-  .title-note {
-    font-size: 8px;
-  }
   .enter-prompt {
     font-size: 12px;
     bottom: 4%;
@@ -516,14 +552,6 @@ summary:focus-visible {
   .enter-prompt span {
     margin: 0 7px;
     font-size: 9px;
-  }
-  .plain-navigation {
-    gap: 12px 22px;
-    font-size: 12px;
-    padding: 20px;
-  }
-  .plain-navigation a {
-    padding: 7px 0;
   }
   .reading-shell {
     padding: 28px 22px 0;
@@ -555,6 +583,12 @@ summary:focus-visible {
     top: 44px;
   }
 }
+@media (max-aspect-ratio: 1 / 1) {
+  .scene {
+    width: 100vw;
+    height: auto;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -562,6 +596,12 @@ summary:focus-visible {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+  .ambient-cloud {
+    display: none;
+  }
+  .moon-glow {
+    opacity: 0.24;
   }
 }
 
@@ -582,14 +622,7 @@ summary:focus-visible {
   text-decoration: underline;
 }
 
-.title-note {
-  width: fit-content;
-  background: #000;
-  padding: 3px 6px;
-  margin-left: -6px;
-}
 @media (max-width: 700px) {
-  .title-note,
   .title-rule {
     display: none;
   }

@@ -30,6 +30,22 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     };
     await page.goto(base + "/");
     await page.evaluate(() => document.fonts.ready);
+    assert.equal(
+      await page
+        .locator(".scene-header, .scene-caption, .plain-navigation")
+        .count(),
+      0,
+    );
+    assert.equal(
+      await page.getByText("The personal realm of Ryan Galloway").count(),
+      0,
+    );
+    assert.equal(await page.getByText("Engineering. Open source.").count(), 0);
+    const viewport = page.viewportSize();
+    const mainBox = await page.locator(".castle-main").boundingBox();
+    assert.equal(Math.round(mainBox.width), viewport.width);
+    assert.equal(Math.round(mainBox.height), viewport.height);
+    assert.equal(await page.locator(".ambient-cloud").count(), 2);
     await screenshot(page, "exterior");
     await page.locator(".enter-prompt").click();
     await page.waitForURL("**/castle/hall/");

@@ -192,3 +192,15 @@ and the journal have brief approach animations.
 - Desktop and mobile screenshots inspected during implementation.
 - Original generated scene PNGs and authored SVG character poses are separate
   from navigation logic. This is an initial art/interaction pass for review.
+
+## Fullscreen presentation follow-up
+
+- The interactive exterior and Great Hall occupy the full viewport without a
+  header, caption, or footer. Reading pages retain their reading navigation.
+- The castle map remains as a compact overlay so every destination is still
+  available without JavaScript or pointer-only interaction.
+- The exterior adds slow stippled cloud drift and stepped moonlight breathing.
+  Both are decorative, CSS-only, and become static or disappear under
+  `prefers-reduced-motion`.
+- The exterior keeps only the Dark Castle title, ornament, and enter prompt;
+  the introductory eyebrow and engineering tagline were removed.

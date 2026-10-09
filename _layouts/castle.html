@@ -2,21 +2,23 @@
 <html lang="en">
 <head>{% include castle-head.html %}</head>
 <body class="castle-page {{ page.scene }}">
-  <a class="skip-link" href="#destinations">Skip to navigation</a>
-  <header class="scene-header">
-    <a class="wordmark" href="{{ '/' | relative_url }}">rsg.io <span>/ {{ page.title }}</span></a>
+  <a class="skip-link" href="#scene-menu">Skip to navigation</a>
+  <div class="scene-menu" id="scene-menu">
     {% include castle-map.html %}
-  </header>
+  </div>
   {% assign scene = site.data.castle[page.scene] %}
   <main id="main" class="castle-main">
     <div class="scene" data-scene="{{ page.scene }}" style="--scene-ratio: {{ scene.width }} / {{ scene.height }}">
       <img class="scene-art" src="{{ scene.image | relative_url }}" alt="{{ scene.description | escape }}" width="{{ scene.width }}" height="{{ scene.height }}" fetchpriority="high">
       {% if page.scene == 'exterior' %}
+      <div class="scene-atmosphere" aria-hidden="true">
+        <span class="moon-glow"></span>
+        <span class="ambient-cloud ambient-cloud-one"></span>
+        <span class="ambient-cloud ambient-cloud-two"></span>
+      </div>
       <div class="title-block">
-        <p class="eyebrow">The personal realm of Ryan Galloway</p>
         <h1>Dark<br>Castle</h1>
         <div class="title-rule" aria-hidden="true">──── ◇ ────</div>
-        <p class="title-note">Engineering. Open source.<br>Notes from the long way round.</p>
       </div>
       {% else %}<h1 class="sr-only">The Great Hall</h1>{% endif %}
       <img class="hero" data-interaction-src="{{ '/assets/darkcastle/hero-reach.svg' | relative_url }}" src="{{ '/assets/darkcastle/hero.svg' | relative_url }}" alt="" aria-hidden="true" style="left: {{ scene.spawn[0] }}%; top: {{ scene.spawn[1] }}%">
@@ -25,16 +27,6 @@
       {% endfor %}
       {% if page.scene == 'exterior' %}<a class="enter-prompt" href="{{ '/castle/hall/' | relative_url }}" data-hotspot="entrance"><span aria-hidden="true">✦</span> Enter the castle <span aria-hidden="true">✦</span></a>{% endif %}
     </div>
-    <div class="scene-caption">
-      <span>{% if page.scene == 'exterior' %}A small corner of a very large world.{% else %}The Great Hall <span aria-hidden="true">/</span> Every door, another story.{% endif %}</span>
-      <span class="interaction-hint">{% if page.scene == 'exterior' %}Come in. Stay curious.{% else %}Choose a door. Open the journal.{% endif %}</span>
-    </div>
-    <nav id="destinations" class="plain-navigation" aria-label="Quick navigation">
-      <a href="{{ '/captainslog/' | relative_url }}">Captain’s Log</a>
-      <a href="{{ '/blog/' | relative_url }}">Writing</a>
-      <a href="{{ '/projects/' | relative_url }}">Projects</a>
-      <a href="{{ '/about/' | relative_url }}">About</a>
-    </nav>
     <div class="travel-status" hidden><span role="status">On your way…</span> <a href="{{ '/castle/hall/' | relative_url }}">Skip animation →</a></div>
     <script type="application/json" id="scene-manifest">{{ scene | jsonify }}</script>
     <script src="{{ '/assets/darkcastle/scripts/scene.js' | relative_url }}" defer></script>
