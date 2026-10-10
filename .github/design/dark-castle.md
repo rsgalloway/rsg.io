@@ -448,4 +448,49 @@ manifest uses relative_url so subpath hosting is supported.
 
 A stable scrollbar gutter prevents horizontal changes between short and long
 reading pages. Delayed-download checks verify fixed geometry and a single reveal.
-The stars update remains the following slice.
+The independent-star twinkle is described below.
+
+## Independent star twinkle
+
+The existing 60-star SVG sky keeps its positions and tiny monochrome dots.
+Thirty-six stars remain steady, with slightly varied brightness; 24 have
+independent negative phase offsets and 7.3–14.3-second cycles. Each animated
+star rests for most of its cycle, gently brightens, and settles back without
+vanishing, growing, moving, or adding a glow. The three large synchronized
+group fades are removed.
+
+Stars stay behind the moon, clouds, mountains, and castle. The existing scene
+pause/visibility controls pause their CSS animation along with the atmosphere;
+reduced motion leaves every star at its steady baseline. No new raster asset,
+script, or download is needed.
+
+## Music and thunder
+
+The supplied Ultima VII Roland MT-32 MP3s are copied unchanged: Main Menu
+(96 seconds) is `audio/landing-music.mp3`; Stones (131 seconds) is
+`audio/interior-music.mp3`, shared by the Hall, reading rooms, and their content
+pages. Both loop at 35% volume through the shared `castle-sound.html` include.
+
+A small borderless speaker and Sound label sit opposite the map. Sound starts
+off on a fresh visit. Opting in enables music and exterior thunder together;
+session storage remembers that choice and each track's position across page
+navigation. Position restoration requires a host with audio byte-range support;
+the basic Python HTTP preview server cannot seek. Full document navigation can
+briefly interrupt playback. If the
+browser blocks automatic resumption, the control allows another explicit click.
+Hidden tabs and page exits pause all audio; returning resumes opted-in music.
+Storage failure does not prevent the control working in the current document.
+
+Audio uses `preload="none"` and is excluded from scene-art warming. No audio
+is downloaded before opt-in. Playback errors have a live status, pending playback
+can be cancelled, and native controls are available without JavaScript.
+
+The supplied `samc44-lightning-189909.mp3` is copied unchanged to
+`audio/lightning.mp3` (10.536 seconds). RMS analysis in 10–20 ms windows located
+the first sharp attack at 1.08 seconds, followed by a louder roll near 2.00.
+After opt-in, Web Audio decodes it once and drives each flash from its playback
+clock: light starts at 1.02 seconds, 60 ms before the first crack, with 180 ms
+bright and 200 ms dim exposure shared by all four lighting layers. Rumble
+continues after the flash. Muting, leaving, hiding, or pausing cancels the active
+strike. Reduced motion suppresses strikes. A missing, unsupported, or still
+loading thunder track leaves the visual lightning functional.

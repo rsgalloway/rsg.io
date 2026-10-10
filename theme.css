@@ -243,22 +243,24 @@ summary:focus-visible {
 }
 .stars {
   fill: #fff;
-  opacity: 0.5;
-  animation: star-twinkle 11s ease-in-out infinite alternate;
 }
-.stars-2 {
-  animation-duration: 17s;
-  animation-delay: -7s;
+.stars circle {
+  opacity: var(--star-rest, 0.5);
 }
-.stars-3 {
-  animation-duration: 23s;
-  animation-delay: -13s;
+.stars .star-twinkle {
+  animation: star-twinkle var(--star-cycle, 10s) ease-in-out
+    var(--star-phase, 0s) infinite;
 }
 @keyframes star-twinkle {
-  from {
-    opacity: 0.24;
+  0%,
+  58%,
+  100% {
+    opacity: var(--star-rest, 0.5);
   }
-  to {
+  76% {
+    opacity: 0.94;
+  }
+  88% {
     opacity: 0.64;
   }
 }
@@ -745,4 +747,61 @@ a[aria-busy="true"] {
 
 .reading-document {
   scrollbar-gutter: stable both-edges;
+}
+
+/* Shared opt-in sound control stays outside the click-to-enter surface. */
+.music-toggle,
+.music-fallback {
+  position: fixed;
+  z-index: 20;
+  left: 24px;
+  top: 18px;
+}
+.music-toggle {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #aaa;
+  font: 10px/1.6 var(--mono);
+  cursor: pointer;
+}
+.music-toggle svg {
+  vertical-align: middle;
+  margin-right: 6px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.music-toggle:hover,
+.music-toggle:focus-visible {
+  color: #fff;
+}
+.music-toggle[aria-pressed="false"] .sound-wave,
+.music-toggle[aria-pressed="true"] .sound-muted {
+  display: none;
+}
+.music-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+.music-fallback {
+  top: 76px;
+  width: 220px;
+}
+@media (max-width: 700px) {
+  .music-toggle,
+  .music-fallback {
+    left: 12px;
+  }
+  .music-toggle {
+    top: 12px;
+  }
+  .music-fallback {
+    top: 68px;
+  }
 }

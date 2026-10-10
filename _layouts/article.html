@@ -13,6 +13,7 @@
 <head>{% include castle-head.html %}</head>
 <body class="reading-page{% if room %} room-page room-{{ room.id }}{% endif %}">
   <a class="skip-link" href="#content">Skip to content</a>
+  {% include castle-sound.html %}
   {% if room %}
   <img class="room-backdrop" src="{{ room.image | relative_url }}" width="1536" height="1024" alt="" fetchpriority="high">
   <div class="scene-menu" id="scene-menu">{% include castle-map.html %}</div>

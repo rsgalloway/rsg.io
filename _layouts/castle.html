@@ -6,6 +6,7 @@
   <div class="scene-menu" id="scene-menu">
     {% include castle-map.html %}
   </div>
+  {% include castle-sound.html %}
   {% assign scene = site.data.castle[page.scene] %}
   <main id="main" class="castle-main">
     <div class="scene" data-scene="{{ page.scene }}" style="--scene-ratio: {{ scene.width }} / {{ scene.height }}">
@@ -24,7 +25,7 @@
       {% endunless %}
     </div>
     <script src="{{ '/assets/darkcastle/scripts/scene.js' | relative_url }}" defer></script>
-    {% if page.scene == 'exterior' %}<script src="{{ '/assets/darkcastle/scripts/lightning.js' | relative_url }}" defer></script>{% endif %}
+    {% if page.scene == 'exterior' %}<script src="{{ '/assets/darkcastle/scripts/lightning.js' | relative_url }}" data-thunder-src="{{ '/assets/darkcastle/audio/lightning.mp3' | relative_url }}" data-thunder-attack="1.08" defer></script>{% endif %}
   </main>
 </body>
 </html>

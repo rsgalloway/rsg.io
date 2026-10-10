@@ -91,6 +91,63 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         "none",
       );
     }
+    const starMotion = await page
+      .locator(".stars circle")
+      .evaluateAll((stars) => {
+        const moving = stars.filter((star) => star.getAnimations().length);
+        const steady = stars.filter((star) => !star.getAnimations().length);
+        const star = moving[0];
+        const animation = star.getAnimations()[0];
+        const time = animation.currentTime;
+        const timing = animation.effect.getTiming();
+        const box = () => JSON.stringify(star.getBoundingClientRect().toJSON());
+        animation.currentTime = timing.delay + timing.duration * 0.25;
+        const low = Number(getComputedStyle(star).opacity);
+        const before = box();
+        animation.currentTime = timing.delay + timing.duration * 0.76;
+        const high = Number(getComputedStyle(star).opacity);
+        const after = box();
+        animation.currentTime = time;
+        return {
+          count: stars.length,
+          moving: moving.length,
+          steady: steady.length,
+          low,
+          high,
+          before,
+          after,
+          phases: new Set(
+            moving.map((el) => getComputedStyle(el).animationDelay),
+          ).size,
+          cycles: new Set(
+            moving.map((el) => getComputedStyle(el).animationDuration),
+          ).size,
+          groups: [...document.querySelectorAll(".stars")].map(
+            (el) => getComputedStyle(el).animationName,
+          ),
+        };
+      });
+    assert.equal(starMotion.count, 60);
+    assert.ok(starMotion.moving > 0 && starMotion.steady > starMotion.moving);
+    assert.ok(
+      starMotion.phases > 10 && starMotion.cycles > 3,
+      "Stars twinkle independently",
+    );
+    assert.ok(
+      starMotion.low >= 0.3 &&
+        starMotion.high > starMotion.low + 0.2 &&
+        starMotion.high <= 1,
+    );
+    assert.equal(
+      starMotion.before,
+      starMotion.after,
+      "Twinkle changes brightness without moving or growing",
+    );
+    assert.ok(
+      starMotion.groups.every((name) => name === "none"),
+      "No synchronized group pulsing",
+    );
+
     await page.locator(".cloud-bank").evaluate((el) => el.decode());
     assert.equal(
       await page
@@ -172,6 +229,16 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page
       .locator(".cloud-bank")
       .evaluate((el) => (el.getAnimations()[0].currentTime = 0));
+    assert.ok(
+      await page
+        .locator(".star-twinkle")
+        .evaluateAll((stars) =>
+          stars.every(
+            (star) => getComputedStyle(star).animationPlayState === "paused",
+          ),
+        ),
+      "Scene pause stops every twinkle",
+    );
     const loopStart = await page.screenshot();
     await page
       .locator(".cloud-bank")
@@ -560,6 +627,18 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         ),
       ["none", "none", "none", "none"],
     );
+    assert.ok(
+      await reduced
+        .locator(".stars circle")
+        .evaluateAll((stars) =>
+          stars.every(
+            (star) =>
+              getComputedStyle(star).animationName === "none" &&
+              Number(getComputedStyle(star).opacity) >= 0.3,
+          ),
+        ),
+      "Reduced motion keeps steady visible stars",
+    );
     await reduced.emulateMedia({ reducedMotion: "no-preference" });
     await reduced.waitForFunction(
       () => !document.querySelector(".lake-ripples").hidden,
@@ -755,7 +834,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: paginated journal, Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: independent star twinkle, paginated journal, Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();
