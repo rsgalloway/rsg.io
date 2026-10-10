@@ -259,3 +259,46 @@ and the journal have brief approach animations.
 - The welcome copy is removed. The exterior restores a centered
   "Click to enter" prompt positioned from the viewport edge so it remains visible
   even when the lower part of the cover-sized artwork is cropped.
+
+
+## Independent scene layers (current revision)
+
+The reviewed v6 exterior was checkpointed in `92bd543`. The subsequent cropped
+water and inverted lightning experiments were rejected and are superseded by
+this composition. The misplaced moon glow and lightning bolt are removed.
+
+Eight separate planes, from back to front:
+
+1. Black sky with sparse stars and subtle, slow opacity twinkling.
+2. Static moon, matching the supplied crop's broad flat stippled patches.
+3. Thin ground mist behind the mountain ridges, drifting left to right over
+   four- and five-minute cycles with very small travel distances.
+4. Static background mountains and trees.
+5. Static cliffs and castle.
+6. Independent lake plate with subtle three-state ripple/reflection motion.
+7. Static foreground land and tree.
+8. Viewport-positioned “Click to enter” prompt inside the full-scene link.
+
+The six raster assets in `assets/darkcastle/layers/` were generated separately
+with built-in imagegen. They reconstruct v6's composition; they are not exact
+extractions. Transparent assets retain opaque black shadows inside their
+silhouettes. The sky is authored SVG and the prompt is HTML. Generation prompts
+and revision notes are recorded in [the prompt set](dark-castle-layers/prompts.json).
+The Great Hall keeps its original artwork and stippling.
+
+Water frames are generated once in the browser from the water-only plate by
+varying small horizontal scanline offsets, then switched every two seconds.
+No cliffs, banks, or foreground pixels are in the animated plate. These are
+procedural ripple states, not separately illustrated lighting or wave frames.
+JavaScript disabled or reduced-motion mode retains the static water image;
+reduced-motion also stops stars and mist. Hidden tabs pause all motion.
+
+Lightning is deferred until the layers are approved. Future lighting states
+belong to layers 4–6; this revision has no lightning effect. No pointer parallax
+is applied to the layers marked static. Portrait screens crop toward the castle
+side, reposition the moon behind it, and keep the enter prompt viewport-centered.
+
+For local inspection, run `python .github/scripts/preview_castle_layers.py`
+after building and visit `/layer-review/` on the preview server. This local-only
+page can toggle or isolate each layer, show a transparency grid, and pause
+motion. It is not emitted by the production build.

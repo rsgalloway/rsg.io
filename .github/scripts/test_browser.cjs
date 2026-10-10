@@ -46,15 +46,83 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     assert.equal(Math.round(mainBox.width), viewport.width);
     assert.equal(Math.round(mainBox.height), viewport.height);
     assert.equal(await page.locator(".ambient-cloud, .title-block").count(), 0);
-    assert.equal(await page.locator(".mist-layer").count(), 1);
-    assert.equal(
-      await page.locator(".lightning-bolt, .lightning-flash").count(),
-      2,
+    assert.deepEqual(
+      await page
+        .locator("[data-layer]")
+        .evaluateAll((elements) => elements.map((el) => el.dataset.layer)),
+      ["1", "2", "3", "4", "5", "6", "7", "8"],
     );
+    assert.equal(
+      await page
+        .locator(
+          ".moon-glow, .lightning-bolt, .lightning-flash, .lightning-frame, .water-frame, .hero",
+        )
+        .count(),
+      0,
+    );
+    assert.equal(
+      await page
+        .locator(".layer-moon img")
+        .evaluate((el) => getComputedStyle(el).animationName),
+      "none",
+    );
+    for (const selector of [
+      ".layer-mountains",
+      ".layer-castle",
+      ".layer-foreground",
+    ]) {
+      assert.equal(
+        await page
+          .locator(selector)
+          .evaluate((el) => getComputedStyle(el).transform),
+        "none",
+      );
+    }
+    const mist = await page.locator(".cloud-one").evaluate((el) => {
+      const css = getComputedStyle(el);
+      return {
+        duration: parseFloat(css.animationDuration),
+        top: parseFloat(css.top) / el.parentElement.clientHeight,
+      };
+    });
+    assert.ok(mist.duration >= 240);
+    assert.ok(mist.top >= 0.15, "Mist is low behind the mountain ridges");
+    await page.waitForFunction(
+      () => document.querySelector(".lake-ripples").dataset.frame !== undefined,
+    );
+    const waterFrames = new Set();
+    for (let i = 0; i < 3; i++) {
+      const frame = await page
+        .locator(".lake-ripples")
+        .evaluate((el) => ({ id: el.dataset.frame, pixels: el.toDataURL() }));
+      waterFrames.add(frame.pixels);
+      if (i < 2)
+        await page.waitForFunction(
+          (id) => document.querySelector(".lake-ripples").dataset.frame !== id,
+          frame.id,
+        );
+    }
+    assert.equal(waterFrames.size, 3, "All three water states must differ");
+    await page
+      .locator(".scene")
+      .evaluate((el) => el.setAttribute("data-review-paused", ""));
+    const pausedFrame = await page
+      .locator(".lake-ripples")
+      .getAttribute("data-frame");
+    await page.waitForTimeout(2200);
+    assert.equal(
+      await page.locator(".lake-ripples").getAttribute("data-frame"),
+      pausedFrame,
+    );
+    await page
+      .locator(".scene")
+      .evaluate((el) => el.removeAttribute("data-review-paused"));
     assert.equal(await page.locator(".scene-enter").count(), 1);
     assert.equal(await page.locator(".hero, .welcome-copy").count(), 0);
     assert.equal(
-      (await page.locator(".enter-prompt").innerText()).replace(/\s+/g, " ").trim(),
+      (await page.locator(".enter-prompt").innerText())
+        .replace(/\s+/g, " ")
+        .trim(),
       "✦ Click to enter ✦",
     );
     const sceneBox = await page.locator(".scene").boundingBox();
@@ -64,20 +132,6 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     const promptBox = await page.locator(".enter-prompt").boundingBox();
     assert.ok(promptBox.y >= 0);
     assert.ok(promptBox.y + promptBox.height <= viewport.height);
-    assert.equal(
-      await page
-        .locator(".mist-layer")
-        .evaluate((element) => getComputedStyle(element).animationName),
-      "none",
-    );
-    await page.mouse.move(100, 100);
-    await page.waitForTimeout(250);
-    assert.notEqual(
-      await page
-        .locator(".mist-layer")
-        .evaluate((element) => element.style.getPropertyValue("--parallax-x")),
-      "",
-    );
     await screenshot(page, "exterior");
     await page.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await page.waitForURL("**/castle/hall/");
@@ -126,12 +180,21 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const reduced = await browser.newPage({ reducedMotion: "reduce" });
     await reduced.goto(base + "/");
-    assert.equal(
+    assert.equal(await reduced.locator(".lake-ripples").isVisible(), false);
+    assert.deepEqual(
       await reduced
-        .locator(".mist-layer")
-        .evaluate((element) => getComputedStyle(element).transform),
-      "none",
+        .locator(".cloud, .stars")
+        .evaluateAll((elements) =>
+          elements.map((el) => getComputedStyle(el).animationName),
+        ),
+      ["none", "none", "none", "none", "none"],
     );
+    await reduced.emulateMedia({ reducedMotion: "no-preference" });
+    await reduced.waitForFunction(
+      () => !document.querySelector(".lake-ripples").hidden,
+    );
+    await reduced.emulateMedia({ reducedMotion: "reduce" });
+    assert.equal(await reduced.locator(".lake-ripples").isVisible(), false);
     await reduced
       .locator(".scene-enter")
       .click({ position: { x: 720, y: 700 } });
@@ -139,9 +202,9 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
-    await nojs
-      .locator(".scene-enter")
-      .click({ position: { x: 720, y: 700 } });
+    assert.equal(await nojs.locator(".lake-ripples").isVisible(), false);
+    assert.equal(await nojs.locator(".lake-surface img").isVisible(), true);
+    await nojs.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await nojs.waitForURL("**/castle/hall/");
     await nojs.locator('[data-hotspot="journal"]').click();
     await nojs.waitForURL("**/captainslog/");
@@ -160,6 +223,17 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       ["/castle/directory/", "mobile-directory"],
     ]) {
       await mobile.goto(base + route);
+      if (route === "/") {
+        const prompt = await mobile.locator(".enter-prompt").boundingBox();
+        assert.ok(Math.abs(prompt.x + prompt.width / 2 - 195) < 2);
+        const scene = await mobile.locator(".scene").boundingBox();
+        assert.equal(
+          Math.round(scene.x + scene.width),
+          390,
+          "Portrait crop stays anchored to the castle side",
+        );
+      }
+
       await screenshot(mobile, name);
       assert.equal(
         await mobile.evaluate(
@@ -175,7 +249,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await mobile.waitForURL("**/captainslog/");
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();

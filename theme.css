@@ -176,8 +176,6 @@ summary:focus-visible {
   height: 100%;
   object-fit: fill;
   image-rendering: auto;
-  transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
-    scale(1.004);
 }
 .scene-menu {
   position: fixed;
@@ -191,98 +189,137 @@ summary:focus-visible {
 .scene-menu .castle-map nav {
   top: 44px;
 }
-.scene-atmosphere {
+/* Registered planes: static scenery never moves with the atmosphere. */
+.scene-layer {
   position: absolute;
   inset: 0;
-  z-index: 1;
-  overflow: hidden;
   pointer-events: none;
-  contain: paint;
 }
-.moon-glow {
+.scene-layer img,
+.layer-sky svg {
   position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: auto;
+}
+.layer-sky {
+  z-index: 1;
+  background: #000;
+}
+.layer-moon {
+  z-index: 2;
+}
+.layer-clouds {
+  z-index: 3;
+  overflow: hidden;
+}
+.layer-mountains {
+  z-index: 4;
+}
+.layer-castle {
+  z-index: 5;
+}
+.layer-lake {
+  z-index: 6;
+}
+.layer-foreground {
+  z-index: 7;
+}
+.layer-moon img {
+  left: 60%;
   top: 1%;
-  left: 65%;
-  width: 26%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  box-shadow: 0 0 7vw rgba(255, 255, 255, 0.72);
-  mix-blend-mode: screen;
-  opacity: 0.28;
-  animation: moon-breathe 6s steps(6, end) infinite alternate;
+  width: 22%;
+  height: auto;
 }
-.mist-layer {
-  position: absolute;
-  inset: -1%;
-  width: 102%;
-  height: 102%;
-  object-fit: fill;
-  opacity: 0.2;
-  mix-blend-mode: screen;
-  transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
-    scale(1.015);
-  will-change: transform;
+.layer-mountains img {
+  top: 2%;
 }
-.lightning-bolt {
-  position: absolute;
-  top: 10%;
-  left: 57%;
-  width: 3.5%;
-  height: 26%;
-  opacity: 0;
-  background: url("darkcastle/lightning.svg") center / contain no-repeat;
-  image-rendering: pixelated;
-  animation: lightning-bolt 13s steps(1, end) -4s infinite;
+.layer-castle img {
+  right: 0;
+  top: 0;
+  width: 88%;
+  height: 88%;
 }
-.lightning-flash {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: #fff;
-  mix-blend-mode: screen;
-  animation: lightning-flash 13s steps(1, end) -4s infinite;
+.stars {
+  fill: #fff;
+  opacity: 0.5;
+  animation: star-twinkle 11s ease-in-out infinite alternate;
 }
-@keyframes moon-breathe {
+.stars-2 {
+  animation-duration: 17s;
+  animation-delay: -7s;
+}
+.stars-3 {
+  animation-duration: 23s;
+  animation-delay: -13s;
+}
+@keyframes star-twinkle {
   from {
-    opacity: 0.2;
+    opacity: 0.24;
   }
   to {
-    opacity: 0.58;
+    opacity: 0.64;
   }
 }
-@keyframes lightning-bolt {
-  0%,
-  84%,
-  87%,
-  89%,
-  100% {
+.layer-clouds .cloud {
+  width: 120%;
+  height: 40%;
+  left: -10%;
+  top: 19%;
+  opacity: 0;
+  animation: cloud-crossing 240s linear infinite;
+}
+.layer-clouds .cloud-one {
+  animation-delay: -80s;
+}
+.layer-clouds .cloud-two {
+  top: 22%;
+  width: 110%;
+  height: 36%;
+  animation-duration: 320s;
+  animation-delay: -170s;
+}
+@keyframes cloud-crossing {
+  0% {
+    transform: translateX(-10%);
     opacity: 0;
   }
-  85%,
-  88% {
-    opacity: 1;
+  8% {
+    opacity: 0.7;
+  }
+  92% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(10%);
+    opacity: 0;
   }
 }
-@keyframes lightning-flash {
-  0%,
-  84%,
-  86%,
-  87%,
-  89%,
-  100% {
-    opacity: 0;
-  }
-  85% {
-    opacity: 0.16;
-  }
-  88% {
-    opacity: 0.09;
-  }
+.lake-surface {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 63.8%;
+  bottom: 0;
+  overflow: hidden;
+  background: #000;
+}
+.lake-surface img,
+.lake-ripples {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.scene[data-motion-paused] * {
+  animation-play-state: paused !important;
 }
 .scene-enter {
   position: absolute;
   inset: 0;
-  z-index: 4;
+  z-index: 8;
+  pointer-events: auto;
   cursor: pointer;
   text-decoration: none;
 }
@@ -532,6 +569,20 @@ summary:focus-visible {
     top: 44px;
   }
 }
+/* Keep the fortress in the portrait crop while filling the whole viewport. */
+@media (max-aspect-ratio: 1/1) {
+  .exterior .scene {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+  .exterior .enter-prompt {
+    left: calc(100% - 50vw);
+  }
+  .layer-moon img {
+    left: 68%;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -540,16 +591,17 @@ summary:focus-visible {
     transition: none !important;
     scroll-behavior: auto !important;
   }
-  .lightning-bolt,
-  .lightning-flash {
+  .lake-ripples {
     display: none;
   }
-  .moon-glow {
-    opacity: 0.28;
+  .layer-clouds .cloud {
+    opacity: 0.35;
   }
-  [data-parallax-depth] {
-    transform: none !important;
-    will-change: auto;
+  .layer-clouds .cloud-one {
+    transform: translateX(0);
+  }
+  .layer-clouds .cloud-two {
+    transform: translateX(5%);
   }
 }
 
