@@ -1,9 +1,9 @@
-/* One synchronized exposure change across the mountains, castle, and lake. */
+/* One synchronized exposure change across the mountains, castle, lake, and foreground. */
 (() => {
   const scene = document.querySelector(".exterior [data-scene]");
   if (!scene) return;
   const states = [...scene.querySelectorAll(".lightning-state")];
-  if (states.length !== 3) return;
+  if (states.length !== 4) return;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const timers = new Set();
   let ready = false;

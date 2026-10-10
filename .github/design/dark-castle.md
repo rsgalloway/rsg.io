@@ -339,20 +339,20 @@ that the cloud element and source never swap during startup.
 
 ## Directional lightning draft
 
-Lightning is now implemented for the three agreed layers only: background
-mountains/trees (4), castle/cliffs (5), and lake (6). Separate imagegen lighting
+Lightning is now implemented for four layers: background
+mountains/trees (4), castle/cliffs (5), lake (6), and foreground tree/shore (7). Separate imagegen lighting
 edits in `assets/darkcastle/layers/lightning/` illuminate left-facing surfaces and
 water crests from an off-screen source at screen left. Right-facing surfaces stay
 dark. There is no image inversion, lightning-bolt graphic, or whole-screen wash.
 The [lighting prompts](dark-castle-layers/lightning-prompts.json) record each edit.
 
 The original image bounds and CSS transforms are shared with each lit variant.
-Castle and mountain variants are constrained by their original alpha silhouettes
+Castle, mountain, and foreground variants are constrained by their original alpha silhouettes
 to prevent generated edge halos spilling into other layers. The relighting is
 illustrative rather than a deterministic 3D render; internal stone/tree texture
 may vary slightly, so the held lighting view is part of the art review.
 
-After all three light images decode, the first automatic flash arrives after six
+After all four light images decode, the first automatic flash arrives after six
 seconds, then at intervals of 14–24 seconds. One shared exposure state gives a
 180 ms bright phase, then a 200 ms dim phase, then returns to night. The dim phase
 uses the same directional artwork at lower opacity; it is not a second generated
@@ -361,6 +361,12 @@ cancel active flashes and pending timers. No-JavaScript views remain in night li
 
 The local layer inspector has Night and Light from left held states plus a Preview
 flash button. These allow comparison of each isolated layer and the full composite
-without waiting for a storm. Sky, moon, clouds, foreground, and UI do not flash.
+without waiting for a storm. Sky, moon, clouds, and UI do not flash.
 Browser checks cover registration, simultaneous exposure, restoration, asset-load
 readiness, automatic timing, reduced motion, and no-JavaScript behavior.
+
+The foreground lighting pass adds narrow left-facing highlights on bark, rocks,
+branches, and grasses, while substantially darkening right-facing surfaces and
+the right shore. It shares the same flash timing and original silhouette mask.
+The night foreground remains unchanged; the stronger shadows belong to the
+directional flash state. Review layer 7 in isolation or with the complete scene.

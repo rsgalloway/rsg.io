@@ -245,7 +245,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         .evaluateAll((images) =>
           images.map((img) => img.closest("[data-layer]").dataset.layer),
         ),
-      ["4", "5", "6"],
+      ["4", "5", "6", "7"],
     );
     await page.locator(".scene").evaluate((el) => {
       el.setAttribute("data-review-paused", "");
@@ -257,7 +257,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         .evaluateAll((images) =>
           images.map((img) => Number(getComputedStyle(img).opacity)),
         );
-    assert.deepEqual(await lightLevels(), [0, 0, 0]);
+    assert.deepEqual(await lightLevels(), [0, 0, 0, 0]);
     await screenshot(page, "exterior");
     await page
       .locator(".scene")
@@ -265,10 +265,14 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page.waitForSelector('[data-lightning="bright"]');
     assert.deepEqual(
       await lightLevels(),
-      [1, 1, 1],
-      "All three layers change exposure together",
+      [1, 1, 1, 1],
+      "All four layers change exposure together",
     );
-    for (const selector of [".layer-mountains", ".layer-castle"]) {
+    for (const selector of [
+      ".layer-mountains",
+      ".layer-castle",
+      ".layer-foreground",
+    ]) {
       const aligned = await page.locator(selector).evaluate((layer) => {
         const [base, lit] = [...layer.querySelectorAll("img")];
         const a = base.getBoundingClientRect();
@@ -299,13 +303,13 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         el.dispatchEvent(new Event("castle-lightning-preview")),
       );
     await page.waitForSelector('[data-lightning="bright"]');
-    assert.deepEqual(await lightLevels(), [1, 1, 1]);
+    assert.deepEqual(await lightLevels(), [1, 1, 1, 1]);
     await page.waitForFunction(
       () => !document.querySelector(".scene").hasAttribute("data-lightning"),
     );
     assert.deepEqual(
       await lightLevels(),
-      [0, 0, 0],
+      [0, 0, 0, 0],
       "Exposure returns completely to night",
     );
     await page
@@ -398,7 +402,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         .evaluateAll((images) =>
           images.map((img) => getComputedStyle(img).opacity),
         ),
-      ["0", "0", "0"],
+      ["0", "0", "0", "0"],
     );
     assert.equal(await nojs.locator(".cloud-bank").isVisible(), true);
     assert.equal(
@@ -486,7 +490,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     const pending = await browser.newPage();
     let releaseLighting;
     await pending.route(
-      "**/lightning/lake-left.png",
+      "**/lightning/foreground-left.png",
       (route) =>
         new Promise((resolve) => {
           releaseLighting = () => route.continue().then(resolve);
@@ -515,7 +519,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         .evaluateAll((images) =>
           images.map((img) => getComputedStyle(img).opacity),
         ),
-      ["1", "1", "1"],
+      ["1", "1", "1", "1"],
       "Automatic flash waits for every lighting asset",
     );
     await pending.waitForFunction(
