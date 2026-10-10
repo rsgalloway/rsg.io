@@ -78,14 +78,17 @@
 </div>
 <div class="scene-layer layer-mountains" data-layer="4" data-layer-name="Background mountains and trees" aria-hidden="true">
   <img src="{{ '/assets/darkcastle/layers/mountains-trees.png' | relative_url }}" width="1536" height="1024" alt="" fetchpriority="high">
+  <img class="lightning-state" src="{{ '/assets/darkcastle/layers/lightning/mountains-trees-left.png' | relative_url }}" width="1536" height="1024" alt="" style="--lightning-silhouette: url('{{ '/assets/darkcastle/layers/mountains-trees.png' | relative_url }}')">
 </div>
 <div class="scene-layer layer-castle" data-layer="5" data-layer-name="Cliffs and castle" aria-hidden="true">
   <img src="{{ '/assets/darkcastle/layers/castle-cliffs.png' | relative_url }}" width="1536" height="1024" alt="" fetchpriority="high">
+  <img class="lightning-state" src="{{ '/assets/darkcastle/layers/lightning/castle-cliffs-left.png' | relative_url }}" width="1536" height="1024" alt="" style="--lightning-silhouette: url('{{ '/assets/darkcastle/layers/castle-cliffs.png' | relative_url }}')">
 </div>
 <div class="scene-layer layer-lake" data-layer="6" data-layer-name="Lake and water effects" aria-hidden="true">
   <div class="lake-surface">
     <img src="{{ '/assets/darkcastle/layers/lake.png' | relative_url }}" width="1536" height="1024" alt="">
     <canvas class="lake-ripples" width="1536" height="372" hidden></canvas>
+    <img class="lightning-state" src="{{ '/assets/darkcastle/layers/lightning/lake-left.png' | relative_url }}" width="1536" height="1024" alt="">
   </div>
 </div>
 <div class="scene-layer layer-foreground" data-layer="7" data-layer-name="Foreground land and tree" aria-hidden="true">

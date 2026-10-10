@@ -293,8 +293,8 @@ procedural ripple states, not separately illustrated lighting or wave frames.
 JavaScript disabled or reduced-motion mode retains the static water image;
 reduced-motion also stops stars and mist. Hidden tabs pause all motion.
 
-Lightning is deferred until the layers are approved. Future lighting states
-belong to layers 4–6; this revision has no lightning effect. No pointer parallax
+Lightning was deferred during layer review; the directional lightning draft
+below now adds lighting states to layers 4–6. No pointer parallax
 is applied to the layers marked static. Portrait screens crop toward the castle
 side, reposition the moon behind it, and keep the enter prompt viewport-centered.
 
@@ -336,3 +336,31 @@ Browser checks inspect the rendered alpha contour for gaps and abrupt height
 changes, compare the repeated halves, measure actual drift, and exercise the loop,
 reduced motion, no-JavaScript navigation, and a delayed first image load to verify
 that the cloud element and source never swap during startup.
+
+## Directional lightning draft
+
+Lightning is now implemented for the three agreed layers only: background
+mountains/trees (4), castle/cliffs (5), and lake (6). Separate imagegen lighting
+edits in `assets/darkcastle/layers/lightning/` illuminate left-facing surfaces and
+water crests from an off-screen source at screen left. Right-facing surfaces stay
+dark. There is no image inversion, lightning-bolt graphic, or whole-screen wash.
+The [lighting prompts](dark-castle-layers/lightning-prompts.json) record each edit.
+
+The original image bounds and CSS transforms are shared with each lit variant.
+Castle and mountain variants are constrained by their original alpha silhouettes
+to prevent generated edge halos spilling into other layers. The relighting is
+illustrative rather than a deterministic 3D render; internal stone/tree texture
+may vary slightly, so the held lighting view is part of the art review.
+
+After all three light images decode, the first automatic flash arrives after six
+seconds, then at intervals of 14–24 seconds. One shared exposure state gives a
+180 ms bright phase, then a 200 ms dim phase, then returns to night. The dim phase
+uses the same directional artwork at lower opacity; it is not a second generated
+lighting frame. Reduced motion disables animated flashes, and hidden/paused pages
+cancel active flashes and pending timers. No-JavaScript views remain in night light.
+
+The local layer inspector has Night and Light from left held states plus a Preview
+flash button. These allow comparison of each isolated layer and the full composite
+without waiting for a storm. Sky, moon, clouds, foreground, and UI do not flash.
+Browser checks cover registration, simultaneous exposure, restoration, asset-load
+readiness, automatic timing, reduced motion, and no-JavaScript behavior.

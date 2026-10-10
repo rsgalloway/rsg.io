@@ -2,7 +2,7 @@
 (() => {
   const scene = document.querySelector(".exterior [data-scene]");
   if (!scene) return;
-  const image = scene.querySelector(".lake-surface img");
+  const image = scene.querySelector(".lake-surface img:not(.lightning-state)");
   const canvas = scene.querySelector(".lake-ripples");
   const context = canvas?.getContext("2d");
   if (!image || !context) return;

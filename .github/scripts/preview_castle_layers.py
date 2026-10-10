@@ -17,6 +17,8 @@ controls = r'''
 <div id="layer-switches"></div>
 <button id="all-layers">Show all</button><button id="pause-layers">Pause motion</button>
 <label><input type="checkbox" id="transparency-grid"> Transparency grid</label>
+<label>Lighting <select id="lighting-mode"><option value="auto">Automatic lightning</option><option value="off">Night — hold</option><option value="lit">Light from left — hold</option></select></label>
+<button id="flash-lightning">Preview flash</button>
 <a href="/" style="color:white">Return to entrance</a>
 </details>
 <script>
@@ -40,6 +42,8 @@ controls = r'''
    const paused = scene.toggleAttribute('data-review-paused');
    event.target.textContent = paused ? 'Resume motion' : 'Pause motion';
  };
+ document.querySelector('#lighting-mode').onchange = event => scene.dataset.lightningReview = event.target.value;
+ document.querySelector('#flash-lightning').onclick = () => scene.dispatchEvent(new Event('castle-lightning-preview'));
  document.querySelector('#transparency-grid').onchange = event => scene.classList.toggle('review-grid',event.target.checked);
  // Inspection clicks should not enter the hall.
  scene.querySelector('.scene-enter').addEventListener('click', event => event.preventDefault());

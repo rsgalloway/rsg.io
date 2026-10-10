@@ -1,7 +1,7 @@
 /* Optional browser checks. Requires Playwright; no JavaScript runtime is needed by the site build. */
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
-const { mkdir } = require("node:fs/promises");
+const { mkdir, writeFile } = require("node:fs/promises");
 const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
 const output = process.env.CASTLE_SCREENSHOT_DIR;
 
@@ -29,6 +29,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         });
     };
     await page.goto(base + "/");
+    // Keep unrelated flashes out of the exact-pixel cloud-loop comparison.
+    await page
+      .locator(".scene")
+      .evaluate((el) => (el.dataset.lightningReview = "off"));
+    await page.waitForSelector("[data-lightning-ready]");
     await page.evaluate(() => document.fonts.ready);
     assert.equal(
       await page
@@ -116,6 +121,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       }
       return {
         duration: parseFloat(css.animationDuration),
+        durationMs: el.getAnimations()[0].effect.getTiming().duration,
         iterations: css.animationIterationCount,
         repeats: a.every((value, i) => value === b[i]),
         edges,
@@ -145,7 +151,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page
       .locator(".scene")
       .evaluate((el) => el.setAttribute("data-review-paused", ""));
-    const cloudCycle = mist.duration * 1000;
+    const cloudCycle = mist.durationMs;
     for (const phase of [0, 0.25, 0.5, 0.75, 0.999999]) {
       const covered = await page.locator(".cloud-bank").evaluate((el, time) => {
         el.getAnimations()[0].currentTime = time;
@@ -165,10 +171,12 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         (el, time) => (el.getAnimations()[0].currentTime = time),
         cloudCycle,
       );
-    assert.ok(
-      loopStart.equals(await page.screenshot()),
-      "Cloud loop has no visual reset",
-    );
+    const loopEnd = await page.screenshot();
+    if (output && !loopStart.equals(loopEnd)) {
+      await writeFile(`${output}/loop-start.png`, loopStart);
+      await writeFile(`${output}/loop-end.png`, loopEnd);
+    }
+    assert.ok(loopStart.equals(loopEnd), "Cloud loop has no visual reset");
     await page
       .locator(".scene")
       .evaluate((el) => el.removeAttribute("data-review-paused"));
@@ -230,7 +238,80 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     const promptBox = await page.locator(".enter-prompt").boundingBox();
     assert.ok(promptBox.y >= 0);
     assert.ok(promptBox.y + promptBox.height <= viewport.height);
+    await page.waitForSelector("[data-lightning-ready]");
+    assert.deepEqual(
+      await page
+        .locator(".lightning-state")
+        .evaluateAll((images) =>
+          images.map((img) => img.closest("[data-layer]").dataset.layer),
+        ),
+      ["4", "5", "6"],
+    );
+    await page.locator(".scene").evaluate((el) => {
+      el.setAttribute("data-review-paused", "");
+      el.dataset.lightningReview = "off";
+    });
+    const lightLevels = () =>
+      page
+        .locator(".lightning-state")
+        .evaluateAll((images) =>
+          images.map((img) => Number(getComputedStyle(img).opacity)),
+        );
+    assert.deepEqual(await lightLevels(), [0, 0, 0]);
     await screenshot(page, "exterior");
+    await page
+      .locator(".scene")
+      .evaluate((el) => (el.dataset.lightningReview = "lit"));
+    await page.waitForSelector('[data-lightning="bright"]');
+    assert.deepEqual(
+      await lightLevels(),
+      [1, 1, 1],
+      "All three layers change exposure together",
+    );
+    for (const selector of [".layer-mountains", ".layer-castle"]) {
+      const aligned = await page.locator(selector).evaluate((layer) => {
+        const [base, lit] = [...layer.querySelectorAll("img")];
+        const a = base.getBoundingClientRect();
+        const b = lit.getBoundingClientRect();
+        return (
+          a.x === b.x &&
+          a.y === b.y &&
+          a.width === b.width &&
+          a.height === b.height &&
+          getComputedStyle(lit).maskImage !== "none"
+        );
+      });
+      assert.ok(
+        aligned,
+        "Lighting retains the base registration and alpha silhouette",
+      );
+    }
+    await screenshot(page, "lightning-left");
+    await page
+      .locator(".scene")
+      .evaluate((el) => (el.dataset.lightningReview = "off"));
+    await page.waitForFunction(
+      () => !document.querySelector(".scene").hasAttribute("data-lightning"),
+    );
+    await page
+      .locator(".scene")
+      .evaluate((el) =>
+        el.dispatchEvent(new Event("castle-lightning-preview")),
+      );
+    await page.waitForSelector('[data-lightning="bright"]');
+    assert.deepEqual(await lightLevels(), [1, 1, 1]);
+    await page.waitForFunction(
+      () => !document.querySelector(".scene").hasAttribute("data-lightning"),
+    );
+    assert.deepEqual(
+      await lightLevels(),
+      [0, 0, 0],
+      "Exposure returns completely to night",
+    );
+    await page
+      .locator(".scene")
+      .evaluate((el) => el.removeAttribute("data-review-paused"));
+
     await page.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await page.waitForURL("**/castle/hall/");
     await screenshot(page, "hall");
@@ -278,6 +359,17 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const reduced = await browser.newPage({ reducedMotion: "reduce" });
     await reduced.goto(base + "/");
+    await reduced.waitForSelector("[data-lightning-ready]");
+    await reduced
+      .locator(".scene")
+      .evaluate((el) =>
+        el.dispatchEvent(new Event("castle-lightning-preview")),
+      );
+    assert.equal(
+      await reduced.locator(".scene").getAttribute("data-lightning"),
+      null,
+      "Reduced motion suppresses animated flashes",
+    );
     assert.equal(await reduced.locator(".lake-ripples").isVisible(), false);
     assert.deepEqual(
       await reduced
@@ -300,13 +392,24 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
+    assert.deepEqual(
+      await nojs
+        .locator(".lightning-state")
+        .evaluateAll((images) =>
+          images.map((img) => getComputedStyle(img).opacity),
+        ),
+      ["0", "0", "0"],
+    );
     assert.equal(await nojs.locator(".cloud-bank").isVisible(), true);
     assert.equal(
       await nojs.locator(".layer-clouds canvas, .cloud-source").count(),
       0,
     );
     assert.equal(await nojs.locator(".lake-ripples").isVisible(), false);
-    assert.equal(await nojs.locator(".lake-surface img").isVisible(), true);
+    assert.equal(
+      await nojs.locator(".lake-surface img:not(.lightning-state)").isVisible(),
+      true,
+    );
     await nojs.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await nojs.waitForURL("**/castle/hall/");
     await nojs.locator('[data-hotspot="journal"]').click();
@@ -379,9 +482,49 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       initialSource,
     );
     await startup.close();
+    // Hold one lighting download: incomplete light states must never flash.
+    const pending = await browser.newPage();
+    let releaseLighting;
+    await pending.route(
+      "**/lightning/lake-left.png",
+      (route) =>
+        new Promise((resolve) => {
+          releaseLighting = () => route.continue().then(resolve);
+        }),
+    );
+    await pending.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await pending
+      .locator(".scene")
+      .evaluate((el) =>
+        el.dispatchEvent(new Event("castle-lightning-preview")),
+      );
+    assert.equal(
+      await pending.locator(".scene").getAttribute("data-lightning"),
+      null,
+    );
+    await releaseLighting();
+    await pending.waitForSelector("[data-lightning-ready]");
+    await pending.waitForFunction(
+      () => document.querySelector(".scene").dataset.lightning === "bright",
+      null,
+      { timeout: 10000 },
+    );
+    assert.deepEqual(
+      await pending
+        .locator(".lightning-state")
+        .evaluateAll((images) =>
+          images.map((img) => getComputedStyle(img).opacity),
+        ),
+      ["1", "1", "1"],
+      "Automatic flash waits for every lighting asset",
+    );
+    await pending.waitForFunction(
+      () => !document.querySelector(".scene").hasAttribute("data-lightning"),
+    );
+    await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();

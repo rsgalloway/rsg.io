@@ -24,6 +24,7 @@
       {% endunless %}
     </div>
     <script src="{{ '/assets/darkcastle/scripts/scene.js' | relative_url }}" defer></script>
+    {% if page.scene == 'exterior' %}<script src="{{ '/assets/darkcastle/scripts/lightning.js' | relative_url }}" defer></script>{% endif %}
   </main>
 </body>
 </html>
