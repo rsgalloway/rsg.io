@@ -2,24 +2,14 @@
   "exterior": {
     "width": 1536,
     "height": 1024,
-    "image": "/assets/darkcastle/scenes/exterior-v4.png",
-    "description": "A dark fortress rises from lake cliffs beneath a full moon, with fine mist, distant mountains, and foreground trees reflected across the water.",
-    "spawn": [90, 69],
+    "image": "/assets/darkcastle/scenes/exterior-v6.png",
+    "description": "A finely stippled dark fortress rises from lake cliffs beneath a full moon, with distant mountains and foreground trees reflected across the water.",
     "hotspots": [
       {
         "id": "entrance",
         "label": "Enter the Great Hall",
         "href": "/castle/hall/",
-        "bounds": [75, 31, 12, 18],
-        "approach": [81, 42],
-        "action": "open-door",
-        "path": [
-          [90, 62],
-          [86, 57],
-          [90, 52],
-          [85, 47],
-          [81, 42]
-        ]
+        "bounds": [75, 31, 12, 18]
       }
     ]
   },
@@ -28,49 +18,36 @@
     "height": 1024,
     "image": "/assets/darkcastle/scenes/hall.png",
     "description": "A vaulted stone hall with moonlit windows, arched doors, and an open journal on a central lectern.",
-    "spawn": [37, 85],
     "hotspots": [
       {
         "id": "journal",
         "label": "Read Captain’s Log",
         "href": "/captainslog/",
-        "bounds": [43, 65, 14, 20],
-        "approach": [44, 85],
-        "action": "open-book"
+        "bounds": [43, 65, 14, 20]
       },
       {
         "id": "library",
         "label": "Library — writing",
         "href": "/blog/",
-        "bounds": [12, 56, 11, 28],
-        "approach": [18, 84],
-        "action": "open-door"
+        "bounds": [12, 56, 11, 28]
       },
       {
         "id": "workshop",
         "label": "Workshop — projects",
         "href": "/projects/",
-        "bounds": [77, 56, 11, 28],
-        "approach": [82, 84],
-        "action": "open-door"
+        "bounds": [77, 56, 11, 28]
       },
       {
         "id": "observatory",
         "label": "Observatory — about Ryan",
         "href": "/about/",
-        "bounds": [77, 12, 9, 18],
-        "approach": [82, 43],
-        "action": "open-door",
-        "immediate": true
+        "bounds": [77, 12, 9, 18]
       },
       {
         "id": "gate",
         "label": "Return to the castle gate",
         "href": "/",
-        "bounds": [14, 12, 9, 18],
-        "approach": [22, 43],
-        "action": "open-door",
-        "immediate": true
+        "bounds": [14, 12, 9, 18]
       }
     ]
   }

@@ -244,3 +244,18 @@ and the journal have brief approach animations.
   motion of only a few pixels; there is no autonomous cloud drift.
 - Touch devices keep the layers static. `prefers-reduced-motion` also removes
   parallax and retains immediate navigation.
+
+## Full-bleed exterior follow-up
+
+- The reviewed layered exterior was checkpointed in commit `aab550d`.
+- The exterior again covers the entire viewport. It is anchored to the top on
+  wide screens so every castle tower remains visible; excess lake and foreground
+  may crop below the viewport instead of adding side bars.
+- The exterior uses `exterior-v6.png`. Its small-grain stipple and detailed line
+  texture intentionally match the original Great Hall while avoiding enlarged
+  square pixels. The Great Hall artwork remains unchanged.
+- Player sprites and travel animations are removed from all scenes for now.
+  Hotspots remain ordinary semantic links with immediate navigation.
+- The welcome copy is removed. The exterior restores a centered
+  "Click to enter" prompt positioned from the viewport edge so it remains visible
+  even when the lower part of the cover-sized artwork is cropped.

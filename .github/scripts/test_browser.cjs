@@ -52,10 +52,18 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       2,
     );
     assert.equal(await page.locator(".scene-enter").count(), 1);
+    assert.equal(await page.locator(".hero, .welcome-copy").count(), 0);
     assert.equal(
-      (await page.locator(".welcome-copy").innerText()).replace(/\n+/g, " "),
-      "Welcome. Click to enter the castle.",
+      (await page.locator(".enter-prompt").innerText()).replace(/\s+/g, " ").trim(),
+      "✦ Click to enter ✦",
     );
+    const sceneBox = await page.locator(".scene").boundingBox();
+    assert.ok(sceneBox.x <= 0 && Math.round(sceneBox.y) === 0);
+    assert.ok(sceneBox.x + sceneBox.width >= viewport.width);
+    assert.ok(sceneBox.height >= viewport.height);
+    const promptBox = await page.locator(".enter-prompt").boundingBox();
+    assert.ok(promptBox.y >= 0);
+    assert.ok(promptBox.y + promptBox.height <= viewport.height);
     assert.equal(
       await page
         .locator(".mist-layer")
@@ -92,7 +100,6 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page.keyboard.press("Enter");
     await page.waitForURL("**/blog/");
     await page.goBack();
-    assert.equal(await page.locator(".travel-status").isVisible(), false);
     await page.locator('[data-hotspot="journal"]').click();
     await page.keyboard.press("Escape");
     await page.waitForURL("**/captainslog/");
@@ -102,6 +109,20 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       .getByRole("link", { name: "Workshop Projects" })
       .click();
     await page.waitForURL("**/projects/");
+
+    const wide = await browser.newPage({
+      viewport: { width: 1920, height: 960 },
+    });
+    await wide.goto(base + "/");
+    const wideScene = await wide.locator(".scene").boundingBox();
+    assert.equal(Math.round(wideScene.height), 1280);
+    assert.equal(Math.round(wideScene.width), 1920);
+    assert.equal(Math.round(wideScene.x), 0);
+    assert.equal(Math.round(wideScene.y), 0);
+    const widePrompt = await wide.locator(".enter-prompt").boundingBox();
+    assert.ok(widePrompt.y >= 0);
+    assert.ok(widePrompt.y + widePrompt.height <= 960);
+    await screenshot(wide, "wide-exterior");
 
     const reduced = await browser.newPage({ reducedMotion: "reduce" });
     await reduced.goto(base + "/");
@@ -115,7 +136,6 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       .locator(".scene-enter")
       .click({ position: { x: 720, y: 700 } });
     await reduced.waitForURL("**/castle/hall/");
-    assert.equal(await reduced.locator(".travel-status").isVisible(), false);
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
