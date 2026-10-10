@@ -13,6 +13,52 @@
   const status = document.querySelector(".travel-status");
   const idleSprite = hero.src;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const finePointer = window.matchMedia("(pointer: fine)");
+  const parallaxLayers = [...scene.querySelectorAll("[data-parallax-depth]")];
+  let parallaxFrame;
+  let parallaxCurrent = { x: 0, y: 0 };
+  let parallaxTarget = { x: 0, y: 0 };
+  const renderParallax = () => {
+    parallaxCurrent.x += (parallaxTarget.x - parallaxCurrent.x) * 0.055;
+    parallaxCurrent.y += (parallaxTarget.y - parallaxCurrent.y) * 0.055;
+    parallaxLayers.forEach((layer) => {
+      const depth = Number(layer.dataset.parallaxDepth);
+      layer.style.setProperty(
+        "--parallax-x",
+        `${(parallaxCurrent.x * depth).toFixed(2)}px`,
+      );
+      layer.style.setProperty(
+        "--parallax-y",
+        `${(parallaxCurrent.y * depth).toFixed(2)}px`,
+      );
+    });
+    const moving =
+      Math.abs(parallaxTarget.x - parallaxCurrent.x) > 0.02 ||
+      Math.abs(parallaxTarget.y - parallaxCurrent.y) > 0.02;
+    parallaxFrame = moving ? requestAnimationFrame(renderParallax) : undefined;
+  };
+  const setParallaxTarget = (x, y) => {
+    parallaxTarget = { x, y };
+    if (!parallaxFrame) parallaxFrame = requestAnimationFrame(renderParallax);
+  };
+  const resetParallax = () => {
+    cancelAnimationFrame(parallaxFrame);
+    parallaxFrame = undefined;
+    parallaxCurrent = { x: 0, y: 0 };
+    parallaxTarget = { x: 0, y: 0 };
+    parallaxLayers.forEach((layer) => {
+      layer.style.removeProperty("--parallax-x");
+      layer.style.removeProperty("--parallax-y");
+    });
+  };
+  scene.addEventListener("pointermove", (event) => {
+    if (reduced.matches || !finePointer.matches) return;
+    const bounds = scene.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 16;
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 10;
+    setParallaxTarget(x, y);
+  });
+  scene.addEventListener("pointerleave", () => setParallaxTarget(0, 0));
   let pending = null;
   let timer;
   let animation;
@@ -86,8 +132,14 @@
     if (document.hidden) finish();
   });
   reduced.addEventListener("change", () => {
-    if (reduced.matches) finish();
+    if (reduced.matches) {
+      resetParallax();
+      finish();
+    }
   });
-  window.addEventListener("pagehide", reset);
+  window.addEventListener("pagehide", () => {
+    resetParallax();
+    reset();
+  });
   window.addEventListener("pageshow", reset);
 })();

@@ -1,10 +1,4 @@
 /* Dark Castle — repository-local theme. Black, white, and space to read. */
-@font-face {
-  font-family: Castle;
-  src: url("darkcastle/fonts/UnifrakturCook-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-display: swap;
-}
 :root {
   color-scheme: dark;
   --black: #000;
@@ -177,7 +171,9 @@ summary:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: fill;
-  image-rendering: pixelated;
+  image-rendering: auto;
+  transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
+    scale(1.004);
 }
 .scene-menu {
   position: fixed;
@@ -197,89 +193,121 @@ summary:focus-visible {
   z-index: 1;
   overflow: hidden;
   pointer-events: none;
+  contain: paint;
 }
 .moon-glow {
   position: absolute;
-  top: 3%;
-  left: 73%;
-  width: 20%;
+  top: 1%;
+  left: 65%;
+  width: 26%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 5vw rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 7vw rgba(255, 255, 255, 0.72);
   mix-blend-mode: screen;
-  animation: moon-breathe 8s steps(8, end) infinite alternate;
+  opacity: 0.28;
+  animation: moon-breathe 6s steps(6, end) infinite alternate;
 }
-.ambient-cloud {
+.mist-layer {
   position: absolute;
-  left: -34%;
-  width: 31%;
-  height: 10%;
-  opacity: 0.16;
-  background-image: radial-gradient(circle, #fff 0 1px, transparent 1.5px);
-  background-size: 5px 5px;
-  -webkit-mask-image: radial-gradient(
-    ellipse at center,
-    #000 8%,
-    rgba(0, 0, 0, 0.85) 38%,
-    transparent 72%
-  );
-  mask-image: radial-gradient(
-    ellipse at center,
-    #000 8%,
-    rgba(0, 0, 0, 0.85) 38%,
-    transparent 72%
-  );
-  animation: cloud-drift 46s linear infinite;
+  inset: -1%;
+  width: 102%;
+  height: 102%;
+  object-fit: fill;
+  opacity: 0.2;
+  mix-blend-mode: screen;
+  transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
+    scale(1.015);
+  will-change: transform;
 }
-.ambient-cloud-one {
+.lightning-bolt {
+  position: absolute;
   top: 10%;
+  left: 57%;
+  width: 3.5%;
+  height: 26%;
+  opacity: 0;
+  background: url("darkcastle/lightning.svg") center / contain no-repeat;
+  image-rendering: pixelated;
+  animation: lightning-bolt 13s steps(1, end) -4s infinite;
 }
-.ambient-cloud-two {
-  top: 28%;
-  width: 24%;
-  opacity: 0.11;
-  animation-duration: 63s;
-  animation-delay: -31s;
+.lightning-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: #fff;
+  mix-blend-mode: screen;
+  animation: lightning-flash 13s steps(1, end) -4s infinite;
 }
 @keyframes moon-breathe {
   from {
-    opacity: 0.38;
+    opacity: 0.2;
   }
   to {
-    opacity: 0.72;
+    opacity: 0.58;
   }
 }
-@keyframes cloud-drift {
-  to {
-    transform: translateX(440%);
+@keyframes lightning-bolt {
+  0%,
+  84%,
+  87%,
+  89%,
+  100% {
+    opacity: 0;
+  }
+  85%,
+  88% {
+    opacity: 1;
   }
 }
-.title-block {
+@keyframes lightning-flash {
+  0%,
+  84%,
+  86%,
+  87%,
+  89%,
+  100% {
+    opacity: 0;
+  }
+  85% {
+    opacity: 0.16;
+  }
+  88% {
+    opacity: 0.09;
+  }
+}
+.scene-enter {
   position: absolute;
-  left: 6.5%;
-  top: 17%;
-  width: 48%;
-  pointer-events: none;
+  inset: 0;
+  z-index: 4;
+  cursor: pointer;
+  text-decoration: none;
 }
-.title-block .eyebrow {
-  font-size: clamp(7px, 0.75vw, 11px);
-  max-width: 85%;
-  margin: 0 0 24px;
+.scene-enter:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -8px;
 }
-.title-block h1 {
-  font-family: Castle, Georgia, serif;
-  font-size: clamp(54px, 9vw, 140px);
+.welcome-copy {
+  position: absolute;
+  left: 4.5%;
+  top: 29%;
+  display: grid;
+  gap: 0.15em;
+  padding: 9px 11px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: clamp(10px, 0.82vw, 13px);
+  line-height: 1.25;
+  letter-spacing: 0;
+  box-shadow: 0 0 24px 16px rgba(0, 0, 0, 0.6);
+  transition: color 120ms steps(2, end);
+}
+.welcome-copy strong {
   font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -0.025em;
-  margin: 0;
-  text-shadow: 3px 3px #000;
 }
-.title-rule {
-  font-size: clamp(12px, 1.6vw, 22px);
-  margin: 28px 0 20px;
-  letter-spacing: 0.1em;
+.scene-enter:focus-visible .welcome-copy {
+  color: #000;
+  background: #fff;
+  box-shadow: none;
 }
 .hero {
   position: absolute;
@@ -311,26 +339,6 @@ summary:focus-visible {
 }
 .hotspot:focus-visible {
   outline: 3px double #fff;
-}
-.enter-prompt {
-  position: absolute;
-  bottom: 6%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  text-decoration: none;
-  white-space: nowrap;
-  letter-spacing: 0.08em;
-  font-size: clamp(12px, 1.35vw, 19px);
-  background: #000;
-  padding: 8px 14px;
-}
-.enter-prompt span {
-  font-size: 12px;
-  margin: 0 15px;
-}
-.enter-prompt:hover {
-  text-decoration: underline;
 }
 .travel-status {
   position: fixed;
@@ -508,11 +516,6 @@ summary:focus-visible {
 .content-card a {
   text-decoration: none;
 }
-@media (min-width: 1600px) {
-  .title-block h1 {
-    font-size: 140px;
-  }
-}
 @media (max-width: 700px) {
   .reading-header {
     min-height: 56px;
@@ -527,30 +530,9 @@ summary:focus-visible {
     right: 12px;
     padding: 0 8px;
   }
-  .title-block {
-    top: 12%;
-    left: 6%;
-    width: 49%;
-  }
-  .title-block h1 {
-    font-size: clamp(48px, 12vw, 84px);
-  }
-  .title-block .eyebrow {
-    margin-bottom: 18px;
-    font-size: 7px;
-    letter-spacing: 0.08em;
-  }
-  .title-rule {
-    margin: 16px 0 10px;
-    font-size: 13px;
-  }
-  .enter-prompt {
-    font-size: 12px;
-    bottom: 4%;
-    padding: 6px;
-  }
-  .enter-prompt span {
-    margin: 0 7px;
+  .welcome-copy {
+    left: 5%;
+    top: 30%;
     font-size: 9px;
   }
   .reading-shell {
@@ -597,11 +579,16 @@ summary:focus-visible {
     transition: none !important;
     scroll-behavior: auto !important;
   }
-  .ambient-cloud {
+  .lightning-bolt,
+  .lightning-flash {
     display: none;
   }
   .moon-glow {
-    opacity: 0.24;
+    opacity: 0.28;
+  }
+  [data-parallax-depth] {
+    transform: none !important;
+    will-change: auto;
   }
 }
 
@@ -620,10 +607,4 @@ summary:focus-visible {
 }
 .content-card h3 a:hover {
   text-decoration: underline;
-}
-
-@media (max-width: 700px) {
-  .title-rule {
-    display: none;
-  }
 }

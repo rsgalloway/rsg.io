@@ -9,23 +9,25 @@
   {% assign scene = site.data.castle[page.scene] %}
   <main id="main" class="castle-main">
     <div class="scene" data-scene="{{ page.scene }}" style="--scene-ratio: {{ scene.width }} / {{ scene.height }}">
-      <img class="scene-art" src="{{ scene.image | relative_url }}" alt="{{ scene.description | escape }}" width="{{ scene.width }}" height="{{ scene.height }}" fetchpriority="high">
+      <img class="scene-art" src="{{ scene.image | relative_url }}" alt="{{ scene.description | escape }}" width="{{ scene.width }}" height="{{ scene.height }}" fetchpriority="high"{% if page.scene == 'exterior' %} data-parallax-depth="0.15"{% endif %}>
       {% if page.scene == 'exterior' %}
+      <h1 class="sr-only">Welcome to Dark Castle</h1>
       <div class="scene-atmosphere" aria-hidden="true">
         <span class="moon-glow"></span>
-        <span class="ambient-cloud ambient-cloud-one"></span>
-        <span class="ambient-cloud ambient-cloud-two"></span>
+        <img class="mist-layer" src="{{ '/assets/darkcastle/scenes/mist-v2.png' | relative_url }}" alt="" width="1536" height="1024" data-parallax-depth="0.7">
+        <span class="lightning-bolt"></span>
+        <span class="lightning-flash"></span>
       </div>
-      <div class="title-block">
-        <h1>Dark<br>Castle</h1>
-        <div class="title-rule" aria-hidden="true">──── ◇ ────</div>
-      </div>
+      <a class="scene-enter" href="{{ '/castle/hall/' | relative_url }}" data-hotspot="entrance" aria-label="Enter the castle">
+        <span class="welcome-copy"><strong>Welcome.</strong><span>Click to enter<br>the castle.</span></span>
+      </a>
       {% else %}<h1 class="sr-only">The Great Hall</h1>{% endif %}
       <img class="hero" data-interaction-src="{{ '/assets/darkcastle/hero-reach.svg' | relative_url }}" src="{{ '/assets/darkcastle/hero.svg' | relative_url }}" alt="" aria-hidden="true" style="left: {{ scene.spawn[0] }}%; top: {{ scene.spawn[1] }}%">
+      {% unless page.scene == 'exterior' %}
       {% for spot in scene.hotspots %}
       <a class="hotspot hotspot-{{ spot.id }}" href="{{ spot.href | relative_url }}" aria-label="{{ spot.label | escape }}" data-hotspot="{{ spot.id }}" style="left: {{ spot.bounds[0] }}%; top: {{ spot.bounds[1] }}%; width: {{ spot.bounds[2] }}%; height: {{ spot.bounds[3] }}%"><span class="sr-only">{{ spot.label }}</span></a>
       {% endfor %}
-      {% if page.scene == 'exterior' %}<a class="enter-prompt" href="{{ '/castle/hall/' | relative_url }}" data-hotspot="entrance"><span aria-hidden="true">✦</span> Enter the castle <span aria-hidden="true">✦</span></a>{% endif %}
+      {% endunless %}
     </div>
     <div class="travel-status" hidden><span role="status">On your way…</span> <a href="{{ '/castle/hall/' | relative_url }}">Skip animation →</a></div>
     <script type="application/json" id="scene-manifest">{{ scene | jsonify }}</script>

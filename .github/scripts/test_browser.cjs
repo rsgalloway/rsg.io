@@ -45,9 +45,33 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     const mainBox = await page.locator(".castle-main").boundingBox();
     assert.equal(Math.round(mainBox.width), viewport.width);
     assert.equal(Math.round(mainBox.height), viewport.height);
-    assert.equal(await page.locator(".ambient-cloud").count(), 2);
+    assert.equal(await page.locator(".ambient-cloud, .title-block").count(), 0);
+    assert.equal(await page.locator(".mist-layer").count(), 1);
+    assert.equal(
+      await page.locator(".lightning-bolt, .lightning-flash").count(),
+      2,
+    );
+    assert.equal(await page.locator(".scene-enter").count(), 1);
+    assert.equal(
+      (await page.locator(".welcome-copy").innerText()).replace(/\n+/g, " "),
+      "Welcome. Click to enter the castle.",
+    );
+    assert.equal(
+      await page
+        .locator(".mist-layer")
+        .evaluate((element) => getComputedStyle(element).animationName),
+      "none",
+    );
+    await page.mouse.move(100, 100);
+    await page.waitForTimeout(250);
+    assert.notEqual(
+      await page
+        .locator(".mist-layer")
+        .evaluate((element) => element.style.getPropertyValue("--parallax-x")),
+      "",
+    );
     await screenshot(page, "exterior");
-    await page.locator(".enter-prompt").click();
+    await page.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await page.waitForURL("**/castle/hall/");
     await screenshot(page, "hall");
     await page.locator('[data-hotspot="journal"]').click();
@@ -81,13 +105,23 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const reduced = await browser.newPage({ reducedMotion: "reduce" });
     await reduced.goto(base + "/");
-    await reduced.locator(".enter-prompt").click();
+    assert.equal(
+      await reduced
+        .locator(".mist-layer")
+        .evaluate((element) => getComputedStyle(element).transform),
+      "none",
+    );
+    await reduced
+      .locator(".scene-enter")
+      .click({ position: { x: 720, y: 700 } });
     await reduced.waitForURL("**/castle/hall/");
     assert.equal(await reduced.locator(".travel-status").isVisible(), false);
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
-    await nojs.locator(".enter-prompt").click();
+    await nojs
+      .locator(".scene-enter")
+      .click({ position: { x: 720, y: 700 } });
     await nojs.waitForURL("**/castle/hall/");
     await nojs.locator('[data-hotspot="journal"]').click();
     await nojs.waitForURL("**/captainslog/");

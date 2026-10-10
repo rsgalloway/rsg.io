@@ -3,21 +3,21 @@
 Status: Initial implementation specification (2026-10-09)
 
 ## Vision
-A full-screen, interactive, monochrome personal website inspired by the atmosphere of the 1986 Macintosh game *Dark Castle*. The site is a static website first: exploration enhances navigation but never gates content. The approved landing-page visual reference features a tall, ominous, nearly black castle tower silhouetted against a large moon, a tiny adventurer at its entrance, gothic 'Dark Castle' lettering, and restrained 1-bit dithering.
+A full-screen, interactive, monochrome personal website inspired by the atmosphere of the 1986 Macintosh game *Dark Castle*. The site is a static website first: exploration enhances navigation but never gates content. The landing page features a compact, nearly black castle silhouetted against a large moon, a tiny adventurer, layered mist, lake cliffs, distant mountains, foreground trees, and fine 1-bit illustration.
 
 ## Non-negotiable requirements
 - Preserve existing public article and Captain's Log URLs; audit routes before any migration, use redirects only when necessary.
 - Every content page and room can be loaded directly without first entering the castle.
 - Maintain Markdown + front matter authoring via the existing mkpages/Jekyll pipeline.
 - All required content is accessible without Canvas or JavaScript; HTML navigation is semantic and keyboard accessible.
-- Full-screen castle presentation, no default Macintosh window frame; 1-bit black/white pixel art and nearest-neighbor scaling.
+- Full-screen castle presentation, no default Macintosh window frame; detailed black-and-white scene art at native resolution.
 - No floating labels in the Great Hall. Use subtle hover/focus affordances and accessible names.
 - Clicking a hotspot triggers a brief optional character movement and interaction animation; it must never require platforming or precise controls.
 - Respect prefers-reduced-motion; provide skip and immediate navigation behavior.
 - Use original artwork/sounds evocative of the era, not copied game assets or logo artwork.
 
 ## MVP scope
-1. Exterior title scene at `/` with 'Dark Castle' title, looming tower, moon, small protagonist, and a subtle enter prompt (possibly delayed).
+1. Exterior scene at `/` with a looming tower, moon, small protagonist, and compact welcome prompt; the entire scene enters the castle.
 2. Great Hall at `/castle/hall/` with architectural hotspots and a journal on a lectern.
 3. Captain's Log index at its existing canonical URL; journal hotspot animates character approach/open, then navigates there.
 4. One existing Captain's Log entry rendered from Markdown and reachable by its original URL.
@@ -129,7 +129,7 @@ The coordinates and URLs above are illustrative placeholders, not final assets o
 
 ## Open design decisions
 - Exact original-art production workflow and sprite-sheet dimensions.
-- Whether exterior title remains fixed or animates on initial load.
+- Whether later exterior iterations need hand-authored mist or additional depth planes.
 - How the hall visually indicates hotspots without floating labels.
 - Whether articles use a restrained themed layout or a more elaborate manuscript motif.
 
@@ -176,7 +176,6 @@ Artwork can be swapped by updating the image paths and hotspot coordinates in
 `_data/castle.json`; scene logic does not depend on a particular illustration.
 
 The build pins mkpages 0.4.1, the inspected local version, for reproducibility.
-UnifrakturCook is vendored under its SIL Open Font License for the HTML title.
 The balcony doors navigate immediately because the illustrated hall has no
 continuous path from the foreground floor to the balcony. Lower-floor doors
 and the journal have brief approach animations.
@@ -204,3 +203,44 @@ and the journal have brief approach animations.
   `prefers-reduced-motion`.
 - The exterior keeps only the Dark Castle title, ornament, and enter prompt;
   the introductory eyebrow and engineering tagline were removed.
+
+## Exterior art and motion follow-up
+
+- The exterior now uses a smaller, blockier original fortress rendered with
+  coarse 1-bit pixels. The previous detailed Gothic scene remains in the
+  repository for comparison while the manifest points to `exterior-v2.png`.
+- Clouds are a separate outlined-and-dithered SVG layer crossing both black sky
+  and white moon. Moon glow, a distant lightning bolt, and the lightning flash
+  are independent CSS layers with distinct timing.
+- The title uses Almendra SC on one line so the K remains legible. The character
+  sprites use a 28×40 logical grid with hair, face, shirt, belt, separated
+  legs, and a distinct reaching pose. The exterior spawn sits clear of the enter prompt.
+- Reduced-motion mode hides cloud and lightning layers and keeps only a static
+  moon glow.
+
+## Lake landscape follow-up
+
+- The exterior manifest now points to `exterior-v3.png`: a predominantly black
+  fortress rising from lake cliffs, with moon reflections, distant mountain
+  layers, foreground tree and rock silhouettes, and static stippled mist.
+- The independent cloud SVG was redrawn as a long, thin mist ribbon and slowed
+  to 34- and 49-second crossings. It remains separate from the atmospheric mist
+  baked into the scene, so the sky has both depth and visible motion.
+- The exterior spawn and approach path follow the new right-hand cliff path to
+  the illuminated entrance.
+
+## Layered exterior follow-up
+
+- This revision supersedes the earlier title-font and moving cloud-strip notes.
+- The exterior uses `exterior-v4.png`, rendered at 1536x1024 with fine stipple
+  and line work. Browser scaling uses normal image interpolation instead of
+  forcing enlarged nearest-neighbor pixels.
+- The title and bottom enter prompt were replaced with a small HTML
+  "Welcome. Click to enter the castle." message. A full-scene anchor makes any
+  click or tap enter the Great Hall while retaining keyboard and no-JavaScript
+  navigation.
+- Mist is a transparent `mist-v2.png` plane over the landscape. Background and
+  mist respond to pointer position at shallow, different depths with damped
+  motion of only a few pixels; there is no autonomous cloud drift.
+- Touch devices keep the layers static. `prefers-reduced-motion` also removes
+  parallax and retains immediate navigation.
