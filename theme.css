@@ -731,3 +731,18 @@ summary:focus-visible {
     font-size: 18px;
   }
 }
+
+/* Reserve final layout while the scene decodes; no staged layer reveal. */
+html[data-art-loading] body {
+  visibility: hidden;
+}
+html[data-art-loading] {
+  background: #000;
+}
+a[aria-busy="true"] {
+  cursor: progress;
+}
+
+.reading-document {
+  scrollbar-gutter: stable both-edges;
+}

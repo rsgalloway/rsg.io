@@ -71,7 +71,9 @@ class RenderedSiteTests(unittest.TestCase):
         for name in names:
             if not name.endswith(".md") or name.startswith("."):
                 continue
-            text = subprocess.check_output(["git", "show", "HEAD:" + name], cwd=ROOT, text=True)
+            if not (ROOT / name).exists():
+                continue  # Explicitly removed routes are not preservation targets.
+            text = (ROOT / name).read_text()
             routes.extend(re.findall(r"^permalink:\s*(/\S*)", text, re.M))
         for route in routes:
             with self.subTest(route=route):
@@ -108,6 +110,11 @@ class RenderedSiteTests(unittest.TestCase):
             headings.extend(re.findall(r"<h3[^>]*>(.*?)</h3>", page.read_text()))
         # Kramdown smartens apostrophes in the original entries.
         self.assertEqual(Counter(x.replace("'", "’") for x in expected), Counter(headings))
+
+    def test_directory_is_removed(self):
+        self.assertFalse((self.site / "castle/directory/index.html").exists())
+        for page in self.site.rglob("*.html"):
+            self.assertNotIn('href="/castle/directory/"', page.read_text())
 
     def test_private_inputs_are_not_published(self):
         for name in ("tmp", ".github", ".codex", "dark-castle-site-plan.md"):

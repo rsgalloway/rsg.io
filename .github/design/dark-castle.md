@@ -386,7 +386,7 @@ Library. These are ordinary links, with no decorative nonfunctional controls.
 The page scrolls normally over a stationary room; no nested reading scrollbar
 or JavaScript is required. On mobile the panel nearly fills the width and leaves
 a strip of room artwork above it. All content and existing URLs are retained.
-The Directory retains its previous reading layout. The Great Hall artwork, exterior animation, and audio are unchanged.
+The Directory is retired; the map links directly to the content sections. The Great Hall artwork, exterior animation, and audio are unchanged.
 
 ## Observatory reading-window draft
 
@@ -427,3 +427,25 @@ used. The close control returns to the Great Hall.
 The existing single Markdown source, newest-first order, five entries per page,
 three current routes, and older/newer links are unchanged. No additional
 JavaScript is needed.
+
+## Scene loading and Directory removal
+
+The Directory route and map entry are removed. The map provides direct access
+to the Hall, writing, projects, About, and Captain's Log.
+
+The shared head preloads the current scene's visible artwork. A small controller
+waits for image decoding before revealing the page as a whole, keeping dimensions
+in place during loading. Images that fail to decode do not block the content; an
+eight-second fail-open timer also protects against script/network failures.
+JavaScript-free navigation remains ordinary HTML, without a hidden page.
+
+After the current scene is ready, the controller warms active scene images one
+at a time at low priority. Focus or hover prioritizes the destination; a normal
+internal click keeps the current view until destination images decode, with a
+three-second fallback to normal navigation. Modified clicks, external links, and
+in-page anchors are unchanged. Historical unused art is not downloaded. The
+manifest uses relative_url so subpath hosting is supported.
+
+A stable scrollbar gutter prevents horizontal changes between short and long
+reading pages. Delayed-download checks verify fixed geometry and a single reveal.
+The stars update remains the following slice.

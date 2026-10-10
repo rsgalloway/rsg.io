@@ -1,0 +1,13 @@
+{% assign asset_group = room.id | default: page.scene %}
+{% for group in site.data.scene_assets %}{% if group[0] == asset_group %}{% for asset in group[1].images %}{% unless asset contains '/lightning/' %}
+<link rel="preload" as="image" href="{{ asset | relative_url }}" fetchpriority="high">
+{% endunless %}{% endfor %}{% endif %}{% endfor %}
+<script>
+  document.documentElement.setAttribute('data-art-loading', '');
+  // Fail open if the controller or an image cannot load.
+  setTimeout(function () { document.documentElement.removeAttribute('data-art-loading'); }, 8000);
+</script>
+<script id="scene-assets" type="application/json">[
+{% for group in site.data.scene_assets %}{ "route":{{ group[1].route | relative_url | jsonify }},"prefix":{% if group[0] == 'library' or group[0] == 'workshop' or group[0] == 'journal' %}true{% else %}false{% endif %},"images":[{% for asset in group[1].images %}{{ asset | relative_url | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% unless forloop.last %},{% endunless %}{% endfor %}
+]</script>
+<script src="{{ '/assets/darkcastle/scripts/assets.js' | relative_url }}" defer></script>

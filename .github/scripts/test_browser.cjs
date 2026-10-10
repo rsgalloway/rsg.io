@@ -21,7 +21,14 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         errors.push(`${response.status()} ${response.url()}`);
     });
     if (output) await mkdir(output, { recursive: true });
+    const ready = (target) =>
+      target.waitForFunction(
+        () => !document.documentElement.hasAttribute("data-art-loading"),
+      );
     const screenshot = async (target, name) => {
+      await target.waitForFunction(
+        () => !document.documentElement.hasAttribute("data-art-loading"),
+      );
       if (output)
         await target.screenshot({
           path: `${output}/${name}.png`,
@@ -29,6 +36,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         });
     };
     await page.goto(base + "/");
+    await ready(page);
     // Keep unrelated flashes out of the exact-pixel cloud-loop comparison.
     await page
       .locator(".scene")
@@ -318,9 +326,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     await page.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
     await page.waitForURL("**/castle/hall/");
+    await ready(page);
     await screenshot(page, "hall");
     await page.locator('[data-hotspot="journal"]').click();
     await page.waitForURL("**/captainslog/");
+    await ready(page);
     assert.equal(await page.locator("h3").count(), 5);
     assert.equal(await page.locator(".finder-window").count(), 1);
     assert.equal(
@@ -343,35 +353,45 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await screenshot(page, "log");
     await page.getByRole("link", { name: "Older entries →" }).click();
     await page.waitForURL("**/page/2/");
+    await ready(page);
     assert.equal(await page.locator("h3").count(), 5);
     await page.getByRole("link", { name: "Older entries →" }).click();
     await page.waitForURL("**/page/3/");
+    await ready(page);
     assert.equal(await page.locator("h3").count(), 1);
     assert.equal(await page.locator(".finder-window").count(), 1);
     assert.equal(await page.locator('.pagination a[rel="next"]').count(), 0);
     await screenshot(page, "log-last-page");
     await page.goBack();
+    await ready(page);
     await page.reload();
+    await ready(page);
     assert.equal(await page.locator("h3").count(), 5);
     await page.goto(base + "/castle/hall/");
+    await ready(page);
     await page.locator('[data-hotspot="library"]').focus();
     await page.keyboard.press("Enter");
     await page.waitForURL("**/blog/");
+    await ready(page);
     await page.goBack();
+    await ready(page);
     await page.locator('[data-hotspot="journal"]').click();
     await page.keyboard.press("Escape");
     await page.waitForURL("**/captainslog/");
+    await ready(page);
     await page.locator(".castle-map summary").click();
     await page
       .getByRole("navigation", { name: "Castle map" })
       .getByRole("link", { name: "Workshop Projects" })
       .click();
     await page.waitForURL("**/projects/");
+    await ready(page);
 
     const library = await browser.newPage({
       viewport: { width: 1440, height: 1000 },
     });
     await library.goto(base + "/blog/");
+    await ready(library);
     await library.locator(".room-backdrop").evaluate((img) => img.decode());
     assert.equal(
       await library.locator(".window-title").innerText(),
@@ -392,9 +412,12 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await library.locator(".window-close").focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/castle/hall/");
+    await ready(library);
     await library.goto(base + "/blog/");
+    await ready(library);
     await library.locator(".prose li a").first().click();
     await library.waitForURL("**/blog/i-started-with-forkable-websites/");
+    await ready(library);
     assert.equal(
       await library.locator(".window-title").innerText(),
       "The Library",
@@ -414,10 +437,13 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     );
     await library.getByRole("link", { name: "← Library", exact: true }).click();
     await library.waitForURL("**/blog/");
+    await ready(library);
     await library.goto(base + "/castle/hall/");
+    await ready(library);
     await library.locator('[data-hotspot="observatory"]').focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/about/");
+    await ready(library);
     await library.locator(".room-backdrop").evaluate((img) => img.decode());
     assert.equal(
       await library.locator(".window-title").innerText(),
@@ -447,9 +473,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await library.locator(".window-close").focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/castle/hall/");
+    await ready(library);
     await library.locator('[data-hotspot="workshop"]').focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/projects/");
+    await ready(library);
     await library.locator(".room-backdrop").evaluate((img) => img.decode());
     assert.equal(
       await library.locator(".window-title").innerText(),
@@ -467,6 +495,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await screenshot(library, "workshop");
     await library.getByRole("link", { name: "mkpages", exact: true }).click();
     await library.waitForURL("**/projects/mkpages/");
+    await ready(library);
     assert.equal(
       await library.locator(".window-title").innerText(),
       "The Workshop",
@@ -486,15 +515,18 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       .getByRole("link", { name: "← Workshop", exact: true })
       .click();
     await library.waitForURL("**/projects/");
+    await ready(library);
     await library.locator(".window-close").focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/castle/hall/");
+    await ready(library);
     await library.close();
 
     const wide = await browser.newPage({
       viewport: { width: 1920, height: 960 },
     });
     await wide.goto(base + "/");
+    await ready(wide);
     const wideScene = await wide.locator(".scene").boundingBox();
     assert.equal(Math.round(wideScene.height), 1280);
     assert.equal(Math.round(wideScene.width), 1920);
@@ -507,6 +539,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const reduced = await browser.newPage({ reducedMotion: "reduce" });
     await reduced.goto(base + "/");
+    await ready(reduced);
     await reduced.waitForSelector("[data-lightning-ready]");
     await reduced
       .locator(".scene")
@@ -537,6 +570,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       .locator(".scene-enter")
       .click({ position: { x: 720, y: 700 } });
     await reduced.waitForURL("**/castle/hall/");
+    await ready(reduced);
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
@@ -608,9 +642,12 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       ["/about/", "mobile-observatory"],
       ["/projects/", "mobile-workshop"],
       ["/projects/mkpages/", "mobile-workshop-project"],
-      ["/castle/directory/", "mobile-directory"],
     ]) {
       await mobile.goto(base + route);
+      await ready(mobile);
+      await mobile.waitForFunction(
+        () => !document.documentElement.hasAttribute("data-art-loading"),
+      );
       if (route === "/") {
         const prompt = await mobile.locator(".enter-prompt").boundingBox();
         assert.ok(Math.abs(prompt.x + prompt.width / 2 - 195) < 2);
@@ -635,14 +672,18 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         "Horizontal overflow on " + route,
       );
     }
-    await mobile.getByRole("link", { name: "← Great Hall" }).tap();
+    await mobile.locator(".window-close").tap();
     await mobile.waitForURL("**/castle/hall/");
+    await ready(mobile);
     await mobile.locator('[data-hotspot="journal"]').tap();
     await mobile.waitForURL("**/captainslog/");
+    await ready(mobile);
     await mobile.getByRole("link", { name: "Older entries →" }).tap();
     await mobile.waitForURL("**/page/2/");
+    await ready(mobile);
     await mobile.getByRole("link", { name: "← Newer entries" }).tap();
     await mobile.waitForURL("**/captainslog/");
+    await ready(mobile);
     // Hold the cloud download: the initial DOM must already reference the final
     // artwork, with no fallback image or canvas to swap in after decoding.
     const startup = await browser.newPage();
