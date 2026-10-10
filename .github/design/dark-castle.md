@@ -475,12 +475,12 @@ A small borderless speaker and Sound label sit opposite the map. Sound starts
 off on a fresh visit. Opting in enables music and exterior thunder together;
 local storage remembers that choice across visits and browser restarts. Existing
 session-only choices migrate on the next page load; session storage remains the
-fallback if local storage is unavailable. Track positions stay session-only across
-page navigation. Position restoration requires a host with audio byte-range support;
-the basic Python HTTP preview server cannot seek. Full document navigation can
-briefly interrupt playback. If the
-browser blocks automatic resumption, the control allows another explicit click.
-Hidden tabs and page exits pause all audio; returning resumes opted-in music.
+fallback if local storage is unavailable. Playback positions are not saved or
+restored: every page load, refresh, revisit, and back/forward-cache return starts
+the page's track from the beginning. Previously stored positions are ignored.
+If the browser blocks automatic playback, the control allows an explicit click.
+Hiding the tab or muting pauses within the current page; returning to that tab
+or unmuting resumes the same playback until the page is left.
 Storage failure does not prevent the control working in the current document.
 
 Audio uses `preload="none"` and is excluded from scene-art warming. No audio

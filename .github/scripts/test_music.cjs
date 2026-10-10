@@ -125,6 +125,36 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 23;
     });
+    await page.waitForFunction(
+      () => document.getElementById("background-music").currentTime >= 23,
+    );
+    // Old session positions must not restore after upgrading this behavior.
+    await page.evaluate(() => {
+      sessionStorage.setItem("castle-music-position-interior", "23");
+      sessionStorage.setItem("castle-music-position-landing", "12");
+    });
+    await page.reload();
+    await ready(page);
+    await page.waitForFunction(
+      () =>
+        !document.getElementById("background-music").paused ||
+        document
+          .getElementById("music-status")
+          .textContent.includes("resume music"),
+    );
+    if (
+      await page.locator("#background-music").evaluate((audio) => audio.paused)
+    )
+      await toggle.click();
+    await page.waitForFunction(
+      () => !document.getElementById("background-music").paused,
+    );
+    assert.ok(
+      await page
+        .locator("#background-music")
+        .evaluate((audio) => audio.currentTime < 5),
+      "Refresh starts the track from the beginning",
+    );
     for (const route of ["/blog/", "/projects/", "/about/", "/captainslog/"]) {
       await page.locator(".castle-map summary").click();
       await page.locator(`.castle-map a[href="${route}"]`).click();
@@ -132,7 +162,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
       await ready(page);
       await page.waitForFunction(() => {
         const audio = document.getElementById("background-music");
-        return !audio.paused && audio.currentTime >= 23;
+        return !audio.paused && audio.currentTime < 5;
       });
       assert.ok(
         (await page.locator("#background-music").getAttribute("src")).endsWith(
@@ -146,8 +176,31 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     await ready(page);
     await page.waitForFunction(() => {
       const audio = document.getElementById("background-music");
-      return !audio.paused && audio.currentTime >= 12 && audio.currentTime < 23;
+      return !audio.paused && audio.currentTime < 5;
     });
+    await page.locator("#background-music").evaluate((audio) => {
+      audio.currentTime = 12;
+    });
+    await page.waitForFunction(
+      () => document.getElementById("background-music").currentTime >= 12,
+    );
+    await page.evaluate(() => {
+      window.dispatchEvent(
+        new PageTransitionEvent("pagehide", { persisted: true }),
+      );
+      window.dispatchEvent(
+        new PageTransitionEvent("pageshow", { persisted: true }),
+      );
+    });
+    await page.waitForFunction(
+      () => !document.getElementById("background-music").paused,
+    );
+    assert.ok(
+      await page
+        .locator("#background-music")
+        .evaluate((audio) => audio.currentTime < 5),
+      "Back/forward-cache restoration resets playback",
+    );
     await toggle.click();
     await page.goto(base + "/castle/hall/");
     await ready(page);
@@ -401,7 +454,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await nojs.close();
     console.log(
-      "PASS: opt-in music, looping, persistent preference, blocked-autoplay recovery and track positions, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
+      "PASS: opt-in music, looping, persistent preference, blocked-autoplay recovery, fresh playback on refresh/revisit, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
     );
   } finally {
     await browser.close();

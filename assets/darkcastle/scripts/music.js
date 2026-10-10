@@ -1,11 +1,10 @@
-/* Opt-in sound shared across documents, with a separate position per track. */
+/* Remember the sound preference; each page visit starts its track afresh. */
 (() => {
   const audio = document.getElementById("background-music");
   const button = document.getElementById("music-toggle");
   const status = document.getElementById("music-status");
   if (!audio || !button || !status) return;
   const preferenceKey = "castle-sound";
-  const positionKey = `castle-music-position-${audio.dataset.track}`;
   const read = (key) => {
     if (key === preferenceKey) {
       try {
@@ -47,14 +46,6 @@
     document.dispatchEvent(
       new CustomEvent("castle-sound-change", { detail: { enabled: active } }),
     );
-  const rememberPosition = () => {
-    if (audio.readyState >= 1) write(positionKey, audio.currentTime);
-  };
-  audio.addEventListener("loadedmetadata", () => {
-    const position = Number(read(positionKey));
-    if (Number.isFinite(position) && position > 0 && position < audio.duration)
-      audio.currentTime = position;
-  });
   audio.volume = 0.35;
   const render = () => {
     button.setAttribute("aria-pressed", String(enabled));
@@ -68,7 +59,6 @@
   const suspend = () => {
     attempt++;
     pending = false;
-    rememberPosition();
     audio.pause();
     announceSound(false);
     render();
@@ -130,6 +120,8 @@
   window.addEventListener("pageshow", (event) => {
     if (!event.persisted) return;
     leaving = false;
+    // Back/forward cache can restore the old audio element and playback time.
+    if (audio.readyState >= 1) audio.currentTime = 0;
     enabled = read(preferenceKey) === "on";
     start(true);
     render();
