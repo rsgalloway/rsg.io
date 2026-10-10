@@ -613,3 +613,120 @@ summary:focus-visible {
 .content-card h3 a:hover {
   text-decoration: underline;
 }
+
+/* Illustrated reading rooms: a document window over a stationary room. */
+.room-page {
+  isolation: isolate;
+  min-height: 100svh;
+  background: #000;
+}
+.room-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+.room-page .scene-menu {
+  position: fixed;
+  color: #fff;
+}
+.finder-window {
+  width: calc(100% - 80px);
+  max-width: 780px;
+  margin: clamp(96px, 14svh, 160px) auto 64px;
+  padding: 0;
+  background: #fff;
+  border: 3px double #000;
+  box-shadow:
+    0 0 0 1px #fff,
+    6px 6px 0 #000;
+}
+.window-titlebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  border-bottom: 3px double #000;
+  background: repeating-linear-gradient(to bottom, #fff 0 2px, #000 2px 3px);
+  background-clip: content-box;
+  padding: 5px 8px;
+  font: bold 13px/1.4 var(--mono);
+}
+.window-title {
+  padding: 0 12px;
+  background: #fff;
+}
+.window-close {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 29px;
+  color: #000;
+}
+.window-close span {
+  width: 13px;
+  height: 13px;
+  border: 1px solid #000;
+  background: #fff;
+  box-shadow: 0 0 0 3px #fff;
+}
+.window-close:hover span,
+.window-close:focus-visible span {
+  background: #000;
+}
+.window-close:focus-visible {
+  outline-offset: -3px;
+}
+.window-content {
+  padding: 24px 40px 0;
+}
+.finder-window .prose {
+  max-width: 68ch;
+  font-size: 18px;
+  line-height: 1.75;
+}
+.finder-window .article-heading {
+  padding: 24px 0;
+  margin-bottom: 24px;
+}
+.finder-window .article-heading h1 {
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: bold;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.finder-window .reading-footer {
+  margin-top: 48px;
+}
+@media (max-width: 700px) {
+  .room-backdrop {
+    object-position: 15% center;
+  }
+  .finder-window {
+    width: calc(100% - 24px);
+    margin-top: 180px;
+    margin-bottom: 24px;
+  }
+  .window-content {
+    padding: 20px 20px 0;
+  }
+  .window-titlebar {
+    min-height: 44px;
+    padding: 10px 8px;
+  }
+  .window-close {
+    width: 44px;
+    height: 41px;
+  }
+  .finder-window .prose {
+    font-size: 18px;
+  }
+}

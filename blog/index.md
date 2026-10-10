@@ -1,6 +1,6 @@
 ---
 layout: article
-title: Blog
+title: Library
 permalink: /blog/
 ---
 

@@ -370,3 +370,21 @@ branches, and grasses, while substantially darkening right-facing surfaces and
 the right shore. It shares the same flash timing and original silhouette mask.
 The night foreground remains unchanged; the stronger shadows belong to the
 directional flash state. Review layer 7 in isolation or with the complete scene.
+
+## Library reading-window draft
+
+The Library establishes the room treatment for the Observatory and Workshop.
+A static, full-viewport illustration matches the Great Hall's fine monochrome
+stippling and stone architecture. Shelves, a ladder, and a moonlit window frame
+the reading area. The generated asset and prompt are recorded in
+[room prompts](dark-castle-rooms/prompts.json).
+
+The writing index and its articles use an opaque white document window with a
+striped title bar, double border, square corners, and a hard black shadow. The
+close-box link returns to the Great Hall; article breadcrumbs return to the
+Library. These are ordinary links, with no decorative nonfunctional controls.
+The page scrolls normally over a stationary room; no nested reading scrollbar
+or JavaScript is required. On mobile the panel nearly fills the width and leaves
+a strip of room artwork above it. All content and existing URLs are retained.
+Other reading rooms retain their previous layout pending review of this first
+room. The Great Hall artwork, exterior animation, and audio are unchanged.

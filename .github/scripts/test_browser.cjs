@@ -347,6 +347,54 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       .click();
     await page.waitForURL("**/projects/");
 
+    const library = await browser.newPage({
+      viewport: { width: 1440, height: 1000 },
+    });
+    await library.goto(base + "/blog/");
+    await library.locator(".room-backdrop").evaluate((img) => img.decode());
+    assert.equal(
+      await library.locator(".window-title").innerText(),
+      "The Library",
+    );
+    assert.equal(
+      await library.locator(".finder-window h1").innerText(),
+      "Library",
+    );
+    assert.equal(await library.locator(".reading-header").count(), 0);
+    const windowBox = await library.locator(".finder-window").boundingBox();
+    assert.ok(Math.abs(windowBox.x + windowBox.width / 2 - 720) < 2);
+    assert.ok(
+      windowBox.width <= 780 && windowBox.x > 200,
+      "Artwork remains visible beside the window",
+    );
+    await screenshot(library, "library");
+    await library.locator(".window-close").focus();
+    await library.keyboard.press("Enter");
+    await library.waitForURL("**/castle/hall/");
+    await library.goto(base + "/blog/");
+    await library.locator(".prose li a").first().click();
+    await library.waitForURL("**/blog/i-started-with-forkable-websites/");
+    assert.equal(
+      await library.locator(".window-title").innerText(),
+      "The Library",
+    );
+    await screenshot(library, "library-article");
+    const backgroundBefore = await library
+      .locator(".room-backdrop")
+      .boundingBox();
+    await library.evaluate(() => scrollTo(0, 800));
+    assert.ok(
+      await library.evaluate(() => scrollY > 500),
+      "Long articles use normal document scrolling",
+    );
+    assert.deepEqual(
+      await library.locator(".room-backdrop").boundingBox(),
+      backgroundBefore,
+    );
+    await library.getByRole("link", { name: "← Library", exact: true }).click();
+    await library.waitForURL("**/blog/");
+    await library.close();
+
     const wide = await browser.newPage({
       viewport: { width: 1920, height: 960 },
     });
@@ -421,6 +469,14 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await nojs.getByRole("link", { name: "Older entries →" }).click();
     await nojs.waitForURL("**/page/2/");
 
+    await nojs.goto(base + "/blog/");
+    await nojs.locator(".prose li a").first().click();
+    await nojs.waitForURL("**/blog/i-started-with-forkable-websites/");
+    await nojs.getByRole("link", { name: "← Library", exact: true }).click();
+    await nojs.waitForURL("**/blog/");
+    await nojs.locator(".window-close").click();
+    await nojs.waitForURL("**/castle/hall/");
+
     const mobile = await browser.newPage({
       viewport: { width: 390, height: 844 },
       isMobile: true,
@@ -430,6 +486,8 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       ["/", "mobile"],
       ["/castle/hall/", "mobile-hall"],
       ["/captainslog/", "mobile-log"],
+      ["/blog/", "mobile-library"],
+      ["/blog/i-started-with-forkable-websites/", "mobile-library-article"],
       ["/castle/directory/", "mobile-directory"],
     ]) {
       await mobile.goto(base + route);
@@ -528,7 +586,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: Library reading window, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();
