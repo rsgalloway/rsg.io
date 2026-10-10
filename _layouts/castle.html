@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>{% include castle-head.html %}</head>
+<body class="castle-page {{ page.scene }}">
+  <a class="skip-link" href="#scene-menu">Skip to navigation</a>
+  <div class="scene-menu" id="scene-menu">
+    {% include castle-map.html %}
+  </div>
+  {% include castle-sound.html %}
+  {% assign scene = site.data.castle[page.scene] %}
+  <main id="main" class="castle-main">
+    <div class="scene" data-scene="{{ page.scene }}" style="--scene-ratio: {{ scene.width }} / {{ scene.height }}">
+      {% if page.scene == 'exterior' %}
+      <h1 class="sr-only">Dark Castle</h1>
+      <p class="sr-only">{{ scene.description }}</p>
+      {% include castle-exterior.html %}
+      {% else %}
+      <h1 class="sr-only">The Great Hall</h1>
+      <img class="scene-art" src="{{ scene.image | relative_url }}" alt="{{ scene.description | escape }}" width="{{ scene.width }}" height="{{ scene.height }}" fetchpriority="high">
+      {% endif %}
+      {% unless page.scene == 'exterior' %}
+      {% for spot in scene.hotspots %}
+      <a class="hotspot hotspot-{{ spot.id }}" href="{{ spot.href | relative_url }}" aria-label="{{ spot.label | escape }}" data-hotspot="{{ spot.id }}" style="left: {{ spot.bounds[0] }}%; top: {{ spot.bounds[1] }}%; width: {{ spot.bounds[2] }}%; height: {{ spot.bounds[3] }}%"><span class="sr-only">{{ spot.label }}</span></a>
+      {% endfor %}
+      {% endunless %}
+    </div>
+    <script src="{{ '/assets/darkcastle/scripts/scene.js' | relative_url }}" defer></script>
+    {% if page.scene == 'exterior' %}<script src="{{ '/assets/darkcastle/scripts/lightning.js' | relative_url }}" data-thunder-src="{{ '/assets/darkcastle/audio/lightning.mp3' | relative_url }}" data-thunder-attack="1.08" defer></script><script src="{{ '/assets/darkcastle/scripts/dragon.js' | relative_url }}" defer></script>{% endif %}
+  </main>
+</body>
+</html>

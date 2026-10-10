@@ -1,0 +1,47 @@
+{
+  "hall": {
+    "route": "/castle/hall/",
+    "images": [
+      "/assets/darkcastle/scenes/hall.png"
+    ]
+  },
+  "library": {
+    "route": "/blog/",
+    "images": [
+      "/assets/darkcastle/scenes/library.png"
+    ]
+  },
+  "observatory": {
+    "route": "/about/",
+    "images": [
+      "/assets/darkcastle/scenes/observatory.png"
+    ]
+  },
+  "workshop": {
+    "route": "/projects/",
+    "images": [
+      "/assets/darkcastle/scenes/workshop.png"
+    ]
+  },
+  "journal": {
+    "route": "/captainslog/",
+    "images": [
+      "/assets/darkcastle/scenes/journal-desk.png"
+    ]
+  },
+  "exterior": {
+    "route": "/",
+    "images": [
+      "/assets/darkcastle/layers/moon.png",
+      "/assets/darkcastle/layers/clouds-continuous.png",
+      "/assets/darkcastle/layers/mountains-trees.png",
+      "/assets/darkcastle/layers/castle-cliffs.png",
+      "/assets/darkcastle/layers/lake.png",
+      "/assets/darkcastle/layers/foreground.png",
+      "/assets/darkcastle/layers/lightning/mountains-trees-left.png",
+      "/assets/darkcastle/layers/lightning/castle-cliffs-left.png",
+      "/assets/darkcastle/layers/lightning/lake-left.png",
+      "/assets/darkcastle/layers/lightning/foreground-left.png"
+    ]
+  }
+}

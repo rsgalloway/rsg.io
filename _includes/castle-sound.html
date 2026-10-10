@@ -1,0 +1,8 @@
+{% assign music_track = 'interior' %}
+{% if page.scene == 'exterior' %}{% assign music_track = 'landing' %}{% endif %}
+{% assign music_src = '/assets/darkcastle/audio/' | append: music_track | append: '-music.mp3' %}
+<button class="music-toggle" id="music-toggle" type="button" aria-label="Sound" aria-pressed="false" title="Enable sound" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path class="sound-wave" d="M16 8q4 4 0 8m3-11q7 7 0 14"/><path class="sound-muted" d="m17 10 4 4m0-4-4 4"/></svg><span class="sound-label">Sound off</span></button>
+<span class="sr-only" id="music-status" role="status"></span>
+<audio id="background-music" data-track="{{ music_track }}" src="{{ music_src | relative_url }}" loop preload="none"></audio>
+<noscript><audio class="music-fallback" controls loop preload="none" aria-label="Background music" src="{{ music_src | relative_url }}"></audio></noscript>
+<script src="{{ '/assets/darkcastle/scripts/music.js' | relative_url }}" defer></script>

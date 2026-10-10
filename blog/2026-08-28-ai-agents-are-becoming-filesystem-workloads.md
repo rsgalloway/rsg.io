@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "AI Agents Are Becoming Filesystem Workloads"
 date: 2026-08-28
 description: "Modern coding agents persist sessions, screenshots, tool output, and subagent state. Storage growth, duplication, retention, and provenance are becoming part of the agent runtime problem."

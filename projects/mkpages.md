@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: mkpages
 permalink: /projects/mkpages/
 slug: mkpages

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: SnapFS
 permalink: /projects/snapfs/
 slug: snapfs

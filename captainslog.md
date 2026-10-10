@@ -1,10 +1,8 @@
 ---
-layout: default
+layout: article
 title: Captain's Log
 permalink: /captainslog/
 ---
-
-## Captain's Log
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 

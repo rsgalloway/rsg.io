@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: About
 permalink: /about/
 description: About Ryan Galloway and where to find his work.

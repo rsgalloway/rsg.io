@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: pathbase
 permalink: /projects/pathbase/
 slug: pathbase

@@ -1,0 +1,54 @@
+{
+  "exterior": {
+    "width": 1536,
+    "height": 1024,
+    "image": "/assets/darkcastle/scenes/exterior-v6.png",
+    "description": "A finely stippled dark fortress rises from lake cliffs beneath a full moon, with distant mountains and foreground trees reflected across the water.",
+    "hotspots": [
+      {
+        "id": "entrance",
+        "label": "Enter the Great Hall",
+        "href": "/castle/hall/",
+        "bounds": [75, 31, 12, 18]
+      }
+    ]
+  },
+  "hall": {
+    "width": 1536,
+    "height": 1024,
+    "image": "/assets/darkcastle/scenes/hall.png",
+    "description": "A vaulted stone hall with moonlit windows, arched doors, and an open journal on a central lectern.",
+    "hotspots": [
+      {
+        "id": "journal",
+        "label": "Read Captain’s Log",
+        "href": "/captainslog/",
+        "bounds": [43, 65, 14, 20]
+      },
+      {
+        "id": "library",
+        "label": "Library — writing",
+        "href": "/blog/",
+        "bounds": [12, 56, 11, 28]
+      },
+      {
+        "id": "workshop",
+        "label": "Workshop — projects",
+        "href": "/projects/",
+        "bounds": [77, 56, 11, 28]
+      },
+      {
+        "id": "observatory",
+        "label": "Observatory — about Ryan",
+        "href": "/about/",
+        "bounds": [77, 12, 9, 18]
+      },
+      {
+        "id": "gate",
+        "label": "Return to the castle gate",
+        "href": "/",
+        "bounds": [14, 12, 9, 18]
+      }
+    ]
+  }
+}

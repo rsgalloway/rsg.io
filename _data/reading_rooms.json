@@ -1,0 +1,22 @@
+{
+  "library": {
+    "id": "library",
+    "title": "The Library",
+    "image": "/assets/darkcastle/scenes/library.png"
+  },
+  "observatory": {
+    "id": "observatory",
+    "title": "The Observatory",
+    "image": "/assets/darkcastle/scenes/observatory.png"
+  },
+  "workshop": {
+    "id": "workshop",
+    "title": "The Workshop",
+    "image": "/assets/darkcastle/scenes/workshop.png"
+  },
+  "journal": {
+    "id": "journal",
+    "title": "Captain's Log",
+    "image": "/assets/darkcastle/scenes/journal-desk.png"
+  }
+}

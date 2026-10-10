@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: Bnbnotify
 permalink: /projects/bnbnotify/
 slug: bnbnotify

@@ -1,5 +1,8 @@
 title: Ryan Galloway
 description: Engineering, open source, projects, and blog.
+url: https://rsg.io
+card:
+  image: assets/darkcastle/scenes/exterior-v6.png
 theme: pulsar
 navigation:
   - label: Home

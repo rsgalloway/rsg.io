@@ -1,10 +1,8 @@
 ---
-layout: default
-title: Blog
+layout: article
+title: Library
 permalink: /blog/
 ---
-
-## Blog
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 

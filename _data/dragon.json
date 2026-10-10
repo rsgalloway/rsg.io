@@ -1,0 +1,20 @@
+{
+  "frames": [
+    {
+      "src": "/assets/darkcastle/creatures/dragon-flight.png",
+      "offsetY": -32
+    },
+    {
+      "src": "/assets/darkcastle/creatures/dragon-brake.png",
+      "offsetY": -20
+    },
+    {
+      "src": "/assets/darkcastle/creatures/dragon-settle.png",
+      "offsetY": 0
+    },
+    {
+      "src": "/assets/darkcastle/creatures/dragon-perch.png",
+      "offsetY": 0
+    }
+  ]
+}

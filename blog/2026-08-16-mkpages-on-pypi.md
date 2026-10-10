@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "mkpages is on PyPI"
 date: 2026-08-16 11:30:00 -0700
 permalink: /blog/mkpages-on-pypi/

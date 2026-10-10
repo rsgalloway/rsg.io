@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Your .env File Is Not the Configuration"
 date: 2026-08-31
 description: "The hard part of environment configuration is not parsing key/value pairs. It is deciding which value wins when files, shells, defaults, secrets, and deployment context collide."

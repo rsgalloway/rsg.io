@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "A Shell Command Is Not an Argument List"
 date: 2026-08-16
 description: "A subtle Python subprocess bug reveals why argv lists, Windows command lines, and shell programs are fundamentally different representations."

@@ -1,10 +1,8 @@
 ---
-layout: default
-title: Projects
+layout: article
+title: Workshop
 permalink: /projects/
 ---
-
-## Projects
 
 A small set of tools and experiments around Python workflows, packaging, filesystem behavior, and release automation.
 
