@@ -262,38 +262,21 @@ summary:focus-visible {
     opacity: 0.64;
   }
 }
-.layer-clouds .cloud {
-  width: 120%;
-  height: 40%;
-  left: -10%;
-  top: 19%;
-  opacity: 0;
-  animation: cloud-crossing 240s linear infinite;
+/* One continuous, pre-rendered bank; its second half repeats the first exactly. */
+.layer-clouds .cloud-bank {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 200%;
+  height: 100%;
+  opacity: 0.85;
+  animation: cloud-bank-drift 2727.273s linear infinite;
 }
-.layer-clouds .cloud-one {
-  animation-delay: -80s;
-}
-.layer-clouds .cloud-two {
-  top: 22%;
-  width: 110%;
-  height: 36%;
-  animation-duration: 320s;
-  animation-delay: -170s;
-}
-@keyframes cloud-crossing {
-  0% {
-    transform: translateX(-10%);
-    opacity: 0;
+@keyframes cloud-bank-drift {
+  from {
+    transform: translateX(-50%);
   }
-  8% {
-    opacity: 0.7;
-  }
-  92% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateX(10%);
-    opacity: 0;
+  to {
+    transform: translateX(0);
   }
 }
 .lake-surface {
@@ -594,14 +577,8 @@ summary:focus-visible {
   .lake-ripples {
     display: none;
   }
-  .layer-clouds .cloud {
-    opacity: 0.35;
-  }
-  .layer-clouds .cloud-one {
-    transform: translateX(0);
-  }
-  .layer-clouds .cloud-two {
-    transform: translateX(5%);
+  .cloud-bank {
+    transform: translateX(-50%);
   }
 }
 

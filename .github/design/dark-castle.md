@@ -302,3 +302,37 @@ For local inspection, run `python .github/scripts/preview_castle_layers.py`
 after building and visit `/layer-review/` on the preview server. This local-only
 page can toggle or isolate each layer, show a transparency grid, and pause
 motion. It is not emitted by the production build.
+
+## Continuous background mist (current revision)
+
+The eight-layer revision was reviewed and checkpointed in `cdfce88`.
+Only the cloud bank changes in this follow-up. The annotated v6 reference calls
+for high sides and a low central valley, with fine diagonal engraving that fades
+upward into sparse stipple. `clouds-hatched.png` is the selected texture; the
+coarse speckled bank and dark geometric stripes were rejected.
+
+The half-scale detail, slow drift, and left-side height were approved. Trying to
+raise the sides using another copy at a different height created a disconnected
+central overlap. That two-bank implementation is removed.
+
+`.github/scripts/render_clouds.cjs` exports the approved continuous contour to
+`assets/darkcastle/layers/clouds-continuous.png`. The authoring tool renders the
+fine source texture at roughly half scale, normalizes its upper edge, and maps
+it onto one smooth periodic contour: about y=155 at the sides and y=355 centrally
+in the 1536×1024 scene. The second half of the exported image repeats the first
+pixel-for-pixel. Regenerate only when artwork or contour changes, using Node with
+Playwright and `CASTLE_BROWSER` pointing to Chromium; the site build needs neither.
+
+The page loads that finished image directly. The previous runtime source-image to
+canvas swap caused a visible load pop and is removed. JavaScript-enabled and
+no-JavaScript visitors see exactly the same cloud asset. CSS moves it to the right
+by one bank width every 45.45 minutes (about 0.56 scene pixels per second), a 10% speed increase
+from the reviewed 50-minute loop. The former
+120-minute loop moved only 0.21 pixels per second and was difficult to notice.
+Reduced-motion mode holds it still; hidden tabs and the review pause control stop
+motion. All other layers remain unchanged.
+
+Browser checks inspect the rendered alpha contour for gaps and abrupt height
+changes, compare the repeated halves, measure actual drift, and exercise the loop,
+reduced motion, no-JavaScript navigation, and a delayed first image load to verify
+that the cloud element and source never swap during startup.

@@ -78,15 +78,113 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         "none",
       );
     }
-    const mist = await page.locator(".cloud-one").evaluate((el) => {
+    await page.locator(".cloud-bank").evaluate((el) => el.decode());
+    assert.equal(
+      await page
+        .locator(
+          ".cloud-rises, .cloud-track, .cloud-source, .layer-clouds canvas",
+        )
+        .count(),
+      0,
+    );
+    assert.equal(await page.locator(".cloud-bank").count(), 1);
+    const mist = await page.locator(".cloud-bank").evaluate((el) => {
       const css = getComputedStyle(el);
+      const canvas = document.createElement("canvas");
+      canvas.width = el.naturalWidth;
+      canvas.height = el.naturalHeight;
+      const context = canvas.getContext("2d");
+      context.drawImage(el, 0, 0);
+      const width = canvas.width / 2;
+      const a = context.getImageData(0, 0, width, canvas.height).data;
+      const b = context.getImageData(width, 0, width, canvas.height).data;
+      // Read the actual visible contour from alpha, including the middle join.
+      const edges = [];
+      for (let x = 0; x < width; x += 16) {
+        let edge = -1;
+        for (let y = 0; y < 700; y += 4) {
+          let alpha = 0;
+          for (let dx = 0; dx < 16; dx++)
+            for (let dy = 0; dy < 8; dy++)
+              alpha += a[((y + dy) * width + x + dx) * 4 + 3];
+          if (alpha / (16 * 8 * 255) > 0.2) {
+            edge = y;
+            break;
+          }
+        }
+        edges.push(edge);
+      }
       return {
         duration: parseFloat(css.animationDuration),
-        top: parseFloat(css.top) / el.parentElement.clientHeight,
+        iterations: css.animationIterationCount,
+        repeats: a.every((value, i) => value === b[i]),
+        edges,
       };
     });
-    assert.ok(mist.duration >= 240);
-    assert.ok(mist.top >= 0.15, "Mist is low behind the mountain ridges");
+    assert.ok(
+      mist.duration >= 2400 && mist.duration <= 3600,
+      "Cloud drift is slow but perceptible",
+    );
+    assert.equal(mist.iterations, "infinite");
+    assert.ok(
+      mist.repeats,
+      "The bank repeats pixel-for-pixel at the loop boundary",
+    );
+    assert.ok(
+      mist.edges.every((y) => y >= 0),
+      "Clouds form one uninterrupted bank",
+    );
+    assert.ok(
+      mist.edges.slice(1).every((y, i) => Math.abs(y - mist.edges[i]) <= 24),
+      "No abrupt height discontinuities across the bank",
+    );
+    assert.ok(
+      mist.edges[48] - mist.edges[0] > 100,
+      "The center stays lower than the sides",
+    );
+    await page
+      .locator(".scene")
+      .evaluate((el) => el.setAttribute("data-review-paused", ""));
+    const cloudCycle = mist.duration * 1000;
+    for (const phase of [0, 0.25, 0.5, 0.75, 0.999999]) {
+      const covered = await page.locator(".cloud-bank").evaluate((el, time) => {
+        el.getAnimations()[0].currentTime = time;
+        const canvas = el.getBoundingClientRect();
+        const scene = el.parentElement.getBoundingClientRect();
+        return canvas.left <= scene.left && canvas.right >= scene.right;
+      }, cloudCycle * phase);
+      assert.ok(covered, "The cloud canvas covers the scene at phase " + phase);
+    }
+    await page
+      .locator(".cloud-bank")
+      .evaluate((el) => (el.getAnimations()[0].currentTime = 0));
+    const loopStart = await page.screenshot();
+    await page
+      .locator(".cloud-bank")
+      .evaluate(
+        (el, time) => (el.getAnimations()[0].currentTime = time),
+        cloudCycle,
+      );
+    assert.ok(
+      loopStart.equals(await page.screenshot()),
+      "Cloud loop has no visual reset",
+    );
+    await page
+      .locator(".scene")
+      .evaluate((el) => el.removeAttribute("data-review-paused"));
+    const readCloudX = () =>
+      page
+        .locator(".cloud-bank")
+        .evaluate(
+          (el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).m41,
+        );
+    const startX = await readCloudX();
+    await page.waitForTimeout(2500);
+    const movement = (await readCloudX()) - startX;
+    assert.ok(
+      movement > 0.7 && movement < 3,
+      "Clouds actually drift right at a restrained speed",
+    );
     await page.waitForFunction(
       () => document.querySelector(".lake-ripples").dataset.frame !== undefined,
     );
@@ -183,11 +281,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     assert.equal(await reduced.locator(".lake-ripples").isVisible(), false);
     assert.deepEqual(
       await reduced
-        .locator(".cloud, .stars")
+        .locator(".cloud-bank, .stars")
         .evaluateAll((elements) =>
           elements.map((el) => getComputedStyle(el).animationName),
         ),
-      ["none", "none", "none", "none", "none"],
+      ["none", "none", "none", "none"],
     );
     await reduced.emulateMedia({ reducedMotion: "no-preference" });
     await reduced.waitForFunction(
@@ -202,6 +300,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
 
     const nojs = await browser.newPage({ javaScriptEnabled: false });
     await nojs.goto(base + "/");
+    assert.equal(await nojs.locator(".cloud-bank").isVisible(), true);
+    assert.equal(
+      await nojs.locator(".layer-clouds canvas, .cloud-source").count(),
+      0,
+    );
     assert.equal(await nojs.locator(".lake-ripples").isVisible(), false);
     assert.equal(await nojs.locator(".lake-surface img").isVisible(), true);
     await nojs.locator(".scene-enter").click({ position: { x: 720, y: 700 } });
@@ -247,6 +350,35 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await mobile.waitForURL("**/castle/hall/");
     await mobile.locator('[data-hotspot="journal"]').tap();
     await mobile.waitForURL("**/captainslog/");
+    // Hold the cloud download: the initial DOM must already reference the final
+    // artwork, with no fallback image or canvas to swap in after decoding.
+    const startup = await browser.newPage();
+    let releaseCloud;
+    await startup.route(
+      "**/clouds-continuous.png",
+      (route) =>
+        new Promise((resolve) => {
+          releaseCloud = () => route.continue().then(resolve);
+        }),
+    );
+    await startup.goto(base + "/", { waitUntil: "domcontentloaded" });
+    assert.equal(await startup.locator(".layer-clouds > *").count(), 1);
+    const initialSource = await startup
+      .locator(".cloud-bank")
+      .getAttribute("src");
+    assert.ok(initialSource.endsWith("/clouds-continuous.png"));
+    assert.equal(
+      await startup.locator(".cloud-bank").evaluate((el) => el.complete),
+      false,
+    );
+    await releaseCloud();
+    await startup.locator(".cloud-bank").evaluate((el) => el.decode());
+    assert.equal(await startup.locator(".layer-clouds > *").count(), 1);
+    assert.equal(
+      await startup.locator(".cloud-bank").getAttribute("src"),
+      initialSource,
+    );
+    await startup.close();
     assert.deepEqual(errors, []);
     console.log(
       "PASS: eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
