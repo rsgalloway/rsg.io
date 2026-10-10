@@ -231,6 +231,17 @@ summary:focus-visible {
   top: 1%;
   width: 22%;
   height: auto;
+  animation: moon-drift 211.765s linear forwards;
+}
+/* Drift at 85% of cloud speed: the original 180s duration divided by 0.85.
+   Hold at the endpoint instead of visibly resetting. */
+@keyframes moon-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30%);
+  }
 }
 .layer-mountains img {
   top: 2%;

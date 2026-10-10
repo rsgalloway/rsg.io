@@ -270,7 +270,7 @@ this composition. The misplaced moon glow and lightning bolt are removed.
 Eight separate planes, from back to front:
 
 1. Black sky with sparse stars and subtle, slow opacity twinkling.
-2. Static moon, matching the supplied crop's broad flat stippled patches.
+2. Moon with very slow leftward drift, matching the supplied crop's broad flat stippled patches.
 3. Thin ground mist behind the mountain ridges, drifting left to right over
    four- and five-minute cycles with very small travel distances.
 4. Static background mountains and trees.
@@ -473,8 +473,10 @@ pages. Both loop at 35% volume through the shared `castle-sound.html` include.
 
 A small borderless speaker and Sound label sit opposite the map. Sound starts
 off on a fresh visit. Opting in enables music and exterior thunder together;
-session storage remembers that choice and each track's position across page
-navigation. Position restoration requires a host with audio byte-range support;
+local storage remembers that choice across visits and browser restarts. Existing
+session-only choices migrate on the next page load; session storage remains the
+fallback if local storage is unavailable. Track positions stay session-only across
+page navigation. Position restoration requires a host with audio byte-range support;
 the basic Python HTTP preview server cannot seek. Full document navigation can
 briefly interrupt playback. If the
 browser blocks automatic resumption, the control allows another explicit click.
@@ -494,3 +496,29 @@ bright and 200 ms dim exposure shared by all four lighting layers. Rumble
 continues after the flash. Muting, leaving, hiding, or pausing cancels the active
 strike. Reduced motion suppresses strikes. A missing, unsupported, or still
 loading thunder track leaves the visual lightning functional.
+
+## Moon drift
+
+The moon moves screen-left by 30% of its own diameter over about 3 minutes 32 seconds, linearly,
+then holds its final position without looping or snapping back. Its height and
+size remain fixed. The same transform works with the portrait placement; the
+scene's existing pause controls stop it, and reduced motion keeps it stationary.
+
+The moon moves opposite the clouds at 85% of their speed: 6.6% of scene width
+in 211.765 seconds (180 / 0.85), versus the cloud bank's 100% in 2727.273 seconds.
+
+## Social previews and asset cleanup
+
+`mkpages.yml` sets the public origin to `https://rsg.io` and selects the original
+`assets/darkcastle/scenes/exterior-v6.png` for generated social cards. The custom
+castle head includes `social-card.html`, which uses the same exterior image from
+the scene manifest for Open Graph and Twitter large-image cards. Each page keeps
+its own title, description, and canonical URL; image dimensions and alternative
+text accompany the absolute image URL. No new crop or duplicate image is added.
+
+Unused exterior renders (`exterior.png`, v2, v3, v4), `mist-v2.png`, `clouds.png`,
+and the unused Unifraktur font/license were removed. Historical design notes
+above describe earlier iterations; those retired assets remain in Git history.
+The cloud renderer's source `clouds-hatched.png` moved to this private design
+folder's `dark-castle-layers/` directory, and `render_clouds.cjs` now reads it
+there. Only the exported continuous cloud bank needs to be published.

@@ -275,6 +275,80 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await missingThunder.close();
 
+    // Storage state carries localStorage, but no sessionStorage, into a fresh
+    // browser session. A blocked autoplay attempt must not erase the opt-in.
+    const firstVisit = await browser.newContext();
+    const firstPage = await firstVisit.newPage();
+    await firstPage.goto(base + "/castle/hall/");
+    await ready(firstPage);
+    await firstPage.locator("#music-toggle").click();
+    await firstPage.waitForFunction(
+      () => !document.getElementById("background-music").paused,
+    );
+    assert.equal(
+      await firstPage.evaluate(() => localStorage.getItem("castle-sound")),
+      "on",
+    );
+    const optedIn = await firstVisit.storageState();
+    await firstVisit.close();
+
+    const returnVisit = await browser.newContext({ storageState: optedIn });
+    await returnVisit.addInitScript(() => {
+      const play = HTMLMediaElement.prototype.play;
+      let first = true;
+      HTMLMediaElement.prototype.play = function (...args) {
+        if (first) {
+          first = false;
+          return Promise.reject(
+            new DOMException("Playback needs a gesture", "NotAllowedError"),
+          );
+        }
+        return play.apply(this, args);
+      };
+    });
+    const returnPage = await returnVisit.newPage();
+    await returnPage.goto(base + "/castle/hall/");
+    await ready(returnPage);
+    await returnPage.waitForFunction(() =>
+      document
+        .getElementById("music-status")
+        .textContent.includes("resume music"),
+    );
+    assert.equal(
+      await returnPage.evaluate(() => localStorage.getItem("castle-sound")),
+      "on",
+    );
+    await returnPage.locator("#music-toggle").click();
+    await returnPage.waitForFunction(
+      () => !document.getElementById("background-music").paused,
+    );
+    await returnPage.locator("#music-toggle").click();
+    const optedOut = await returnVisit.storageState();
+    await returnVisit.close();
+
+    const mutedVisit = await browser.newContext({ storageState: optedOut });
+    const mutedPage = await mutedVisit.newPage();
+    const mutedRequests = [];
+    mutedPage.on("request", (request) => {
+      if (request.url().endsWith(".mp3")) mutedRequests.push(request.url());
+    });
+    await mutedPage.goto(base + "/");
+    await ready(mutedPage);
+    assert.equal(
+      await mutedPage.evaluate(() => localStorage.getItem("castle-sound")),
+      "off",
+    );
+    assert.equal(
+      await mutedPage.locator("#music-toggle").getAttribute("aria-pressed"),
+      "false",
+    );
+    assert.deepEqual(
+      mutedRequests,
+      [],
+      "Remembered mute never starts an audio download",
+    );
+    await mutedVisit.close();
+
     const failed = await browser.newPage();
     await failed.route("**/audio/landing-music.mp3", (route) => route.abort());
     await failed.goto(base + "/");
@@ -327,7 +401,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await nojs.close();
     console.log(
-      "PASS: opt-in music, looping, shared preference and track positions, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
+      "PASS: opt-in music, looping, persistent preference, blocked-autoplay recovery and track positions, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
     );
   } finally {
     await browser.close();

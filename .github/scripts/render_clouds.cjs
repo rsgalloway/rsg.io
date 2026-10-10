@@ -12,7 +12,7 @@ const root = path.resolve(__dirname, "../..");
   try {
     const page = await browser.newPage();
     const source = await readFile(
-      path.join(root, "assets/darkcastle/layers/clouds-hatched.png"),
+      path.join(root, ".github/design/dark-castle-layers/clouds-hatched.png"),
     );
     await page.setContent(
       `<div class="layer-clouds"><img class="cloud-source" src="data:image/png;base64,${source.toString("base64")}"><canvas class="cloud-bank" width="3072" height="1024" hidden></canvas></div>`,

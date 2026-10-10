@@ -7,6 +7,14 @@
   const preferenceKey = "castle-sound";
   const positionKey = `castle-music-position-${audio.dataset.track}`;
   const read = (key) => {
+    if (key === preferenceKey) {
+      try {
+        const value = localStorage.getItem(key);
+        if (value !== null) return value;
+      } catch {
+        /* Fall back to the current session when storage is restricted. */
+      }
+    }
     try {
       return sessionStorage.getItem(key);
     } catch {
@@ -14,13 +22,23 @@
     }
   };
   const write = (key, value) => {
+    if (key === preferenceKey) {
+      try {
+        localStorage.setItem(key, String(value));
+      } catch {
+        /* Optional storage. */
+      }
+    }
     try {
       sessionStorage.setItem(key, String(value));
     } catch {
       /* Optional storage. */
     }
   };
-  let enabled = read(preferenceKey) === "on";
+  const savedPreference = read(preferenceKey);
+  // Carry an existing session-only choice into persistent storage, too.
+  if (savedPreference !== null) write(preferenceKey, savedPreference);
+  let enabled = savedPreference === "on";
   let pending = false;
   let attempt = 0;
   let leaving = false;

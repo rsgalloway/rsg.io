@@ -77,7 +77,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       await page
         .locator(".layer-moon img")
         .evaluate((el) => getComputedStyle(el).animationName),
-      "none",
+      "moon-drift",
     );
     for (const selector of [
       ".layer-mountains",
