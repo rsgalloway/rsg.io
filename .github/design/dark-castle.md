@@ -386,7 +386,7 @@ Library. These are ordinary links, with no decorative nonfunctional controls.
 The page scrolls normally over a stationary room; no nested reading scrollbar
 or JavaScript is required. On mobile the panel nearly fills the width and leaves
 a strip of room artwork above it. All content and existing URLs are retained.
-The Workshop and other reading pages retain their previous layout. The Great Hall artwork, exterior animation, and audio are unchanged.
+The Journal and Directory retain their previous reading layout. The Great Hall artwork, exterior animation, and audio are unchanged.
 
 ## Observatory reading-window draft
 
@@ -399,3 +399,15 @@ names the Observatory, and its close link returns to the Great Hall.
 `_data/reading_rooms.json` holds each illustrated room's title and artwork path;
 the article layout chooses the Library for writing and Observatory for About.
 Both use the same window markup, document scrolling, and responsive styling.
+
+## Workshop reading-window draft
+
+The project index and detail pages use the shared window over a static Workshop
+illustration matching the Great Hall. A tool rack, workbench, and exposed
+clockwork frame the left; shelves, a wheel, and a hanging pulley frame the right.
+The artwork and prompt are recorded with the other room assets.
+
+The index is titled Workshop, with existing project descriptions and URLs kept
+intact. Project breadcrumbs return to the Workshop; the window close control
+returns to the Hall. The same responsive window, stationary background, and
+normal document scrolling apply without additional JavaScript.

@@ -426,6 +426,48 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await library.locator(".window-close").focus();
     await library.keyboard.press("Enter");
     await library.waitForURL("**/castle/hall/");
+    await library.locator('[data-hotspot="workshop"]').focus();
+    await library.keyboard.press("Enter");
+    await library.waitForURL("**/projects/");
+    await library.locator(".room-backdrop").evaluate((img) => img.decode());
+    assert.equal(
+      await library.locator(".window-title").innerText(),
+      "The Workshop",
+    );
+    assert.equal(
+      await library.locator(".finder-window h1").innerText(),
+      "Workshop",
+    );
+    assert.ok(
+      (await library.locator(".room-backdrop").getAttribute("src")).endsWith(
+        "/scenes/workshop.png",
+      ),
+    );
+    await screenshot(library, "workshop");
+    await library.getByRole("link", { name: "mkpages", exact: true }).click();
+    await library.waitForURL("**/projects/mkpages/");
+    assert.equal(
+      await library.locator(".window-title").innerText(),
+      "The Workshop",
+    );
+    assert.equal(
+      await library.locator(".finder-window h1").innerText(),
+      "mkpages",
+    );
+    assert.equal(
+      await library
+        .getByRole("link", { name: "site", exact: true })
+        .getAttribute("href"),
+      "https://mkpages.dev",
+    );
+    await screenshot(library, "workshop-project");
+    await library
+      .getByRole("link", { name: "← Workshop", exact: true })
+      .click();
+    await library.waitForURL("**/projects/");
+    await library.locator(".window-close").focus();
+    await library.keyboard.press("Enter");
+    await library.waitForURL("**/castle/hall/");
     await library.close();
 
     const wide = await browser.newPage({
@@ -518,6 +560,14 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await nojs.locator(".window-close").click();
     await nojs.waitForURL("**/castle/hall/");
 
+    await nojs.goto(base + "/projects/");
+    await nojs.getByRole("link", { name: "mkpages", exact: true }).click();
+    await nojs.waitForURL("**/projects/mkpages/");
+    await nojs.getByRole("link", { name: "← Workshop", exact: true }).click();
+    await nojs.waitForURL("**/projects/");
+    await nojs.locator(".window-close").click();
+    await nojs.waitForURL("**/castle/hall/");
+
     const mobile = await browser.newPage({
       viewport: { width: 390, height: 844 },
       isMobile: true,
@@ -530,6 +580,8 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       ["/blog/", "mobile-library"],
       ["/blog/i-started-with-forkable-websites/", "mobile-library-article"],
       ["/about/", "mobile-observatory"],
+      ["/projects/", "mobile-workshop"],
+      ["/projects/mkpages/", "mobile-workshop-project"],
       ["/castle/directory/", "mobile-directory"],
     ]) {
       await mobile.goto(base + route);
@@ -628,7 +680,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: Library and Observatory reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();

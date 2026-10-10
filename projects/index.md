@@ -1,6 +1,6 @@
 ---
 layout: article
-title: Projects
+title: Workshop
 permalink: /projects/
 ---
 

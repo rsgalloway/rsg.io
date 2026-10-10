@@ -8,5 +8,10 @@
     "id": "observatory",
     "title": "The Observatory",
     "image": "/assets/darkcastle/scenes/observatory.png"
+  },
+  "workshop": {
+    "id": "workshop",
+    "title": "The Workshop",
+    "image": "/assets/darkcastle/scenes/workshop.png"
   }
 }
