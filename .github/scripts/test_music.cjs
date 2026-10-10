@@ -41,6 +41,22 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
         });
       } else await route.fulfill({ status: 200, headers, body: bytes });
     });
+    await page.addInitScript(() => {
+      // Simulate visitors upgrading from the old remembered-on behavior.
+      localStorage.setItem("castle-sound", "on");
+      sessionStorage.setItem("castle-sound", "on");
+      sessionStorage.setItem("castle-music-position-interior", "23");
+      sessionStorage.setItem("castle-music-position-landing", "12");
+      window.soundStorageAccesses = [];
+      for (const method of ["getItem", "setItem"]) {
+        const original = Storage.prototype[method];
+        Storage.prototype[method] = function (key, ...args) {
+          if (key.startsWith("castle-"))
+            window.soundStorageAccesses.push({ method, key });
+          return original.call(this, key, ...args);
+        };
+      }
+    });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     const requests = [];
@@ -111,73 +127,81 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 12;
     });
+    const assertMuted = async () => {
+      assert.equal(await toggle.getAttribute("aria-pressed"), "false");
+      assert.ok(
+        await page
+          .locator("#background-music")
+          .evaluate((audio) => audio.paused && audio.currentTime === 0),
+      );
+      assert.deepEqual(
+        await page.evaluate(() => window.soundStorageAccesses),
+        [],
+        "Sound never reads or writes saved preferences/positions",
+      );
+    };
+    const enableSound = async () => {
+      await toggle.click();
+      await page.waitForFunction(
+        () => !document.getElementById("background-music").paused,
+      );
+      assert.deepEqual(
+        await page.evaluate(() => window.soundStorageAccesses),
+        [],
+      );
+    };
+    const beforeHall = requests.length;
     await page.locator(".scene-enter").click({ position: { x: 600, y: 500 } });
     await page.waitForURL("**/castle/hall/");
     await ready(page);
-    await page.waitForFunction(
-      () => !document.getElementById("background-music").paused,
+    await assertMuted();
+    assert.equal(
+      requests.length,
+      beforeHall,
+      "Entering the Hall does not start or download music",
     );
     assert.ok(
       (await page.locator("#background-music").getAttribute("src")).endsWith(
         "interior-music.mp3",
       ),
     );
+    await enableSound();
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 23;
     });
     await page.waitForFunction(
       () => document.getElementById("background-music").currentTime >= 23,
     );
-    // Old session positions must not restore after upgrading this behavior.
-    await page.evaluate(() => {
-      sessionStorage.setItem("castle-music-position-interior", "23");
-      sessionStorage.setItem("castle-music-position-landing", "12");
-    });
     await page.reload();
     await ready(page);
-    await page.waitForFunction(
-      () =>
-        !document.getElementById("background-music").paused ||
-        document
-          .getElementById("music-status")
-          .textContent.includes("resume music"),
-    );
-    if (
-      await page.locator("#background-music").evaluate((audio) => audio.paused)
-    )
-      await toggle.click();
-    await page.waitForFunction(
-      () => !document.getElementById("background-music").paused,
-    );
+    await assertMuted();
+    await enableSound();
     assert.ok(
       await page
         .locator("#background-music")
         .evaluate((audio) => audio.currentTime < 5),
-      "Refresh starts the track from the beginning",
+      "Explicit playback after refresh starts at zero",
     );
-    for (const route of ["/blog/", "/projects/", "/about/", "/captainslog/"]) {
+    for (const route of [
+      "/blog/",
+      "/projects/",
+      "/about/",
+      "/captainslog/",
+      "/",
+    ]) {
+      const beforeNavigation = requests.length;
       await page.locator(".castle-map summary").click();
       await page.locator(`.castle-map a[href="${route}"]`).click();
       await page.waitForURL(base + route);
       await ready(page);
-      await page.waitForFunction(() => {
-        const audio = document.getElementById("background-music");
-        return !audio.paused && audio.currentTime < 5;
-      });
-      assert.ok(
-        (await page.locator("#background-music").getAttribute("src")).endsWith(
-          "interior-music.mp3",
-        ),
+      await assertMuted();
+      assert.equal(
+        requests.length,
+        beforeNavigation,
+        "Navigation does not authorize audio",
       );
+      await enableSound();
     }
-    await page.locator(".castle-map summary").click();
-    await page.locator('.castle-map a[href="/"]').click();
-    await page.waitForURL(base + "/");
-    await ready(page);
-    await page.waitForFunction(() => {
-      const audio = document.getElementById("background-music");
-      return !audio.paused && audio.currentTime < 5;
-    });
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 12;
     });
@@ -192,23 +216,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
         new PageTransitionEvent("pageshow", { persisted: true }),
       );
     });
-    await page.waitForFunction(
-      () => !document.getElementById("background-music").paused,
-    );
-    assert.ok(
-      await page
-        .locator("#background-music")
-        .evaluate((audio) => audio.currentTime < 5),
-      "Back/forward-cache restoration resets playback",
-    );
-    await toggle.click();
-    await page.goto(base + "/castle/hall/");
-    await ready(page);
-    assert.equal(
-      await page.locator("#background-music").evaluate((audio) => audio.paused),
-      true,
-    );
-    assert.equal(await toggle.getAttribute("aria-pressed"), "false");
+    await assertMuted();
     assert.deepEqual(errors, []);
     await page.close();
 
@@ -328,79 +336,34 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await missingThunder.close();
 
-    // Storage state carries localStorage, but no sessionStorage, into a fresh
-    // browser session. A blocked autoplay attempt must not erase the opt-in.
-    const firstVisit = await browser.newContext();
-    const firstPage = await firstVisit.newPage();
-    await firstPage.goto(base + "/castle/hall/");
-    await ready(firstPage);
-    await firstPage.locator("#music-toggle").click();
-    await firstPage.waitForFunction(
+    const restricted = await browser.newPage();
+    await restricted.addInitScript(() => {
+      for (const name of ["localStorage", "sessionStorage"])
+        Object.defineProperty(window, name, {
+          get() {
+            throw new DOMException("Storage denied", "SecurityError");
+          },
+        });
+    });
+    await restricted.goto(base + "/castle/hall/");
+    await ready(restricted);
+    await restricted.locator("#music-toggle").click();
+    await restricted.waitForFunction(
       () => !document.getElementById("background-music").paused,
     );
+    await restricted.reload();
+    await ready(restricted);
     assert.equal(
-      await firstPage.evaluate(() => localStorage.getItem("castle-sound")),
-      "on",
-    );
-    const optedIn = await firstVisit.storageState();
-    await firstVisit.close();
-
-    const returnVisit = await browser.newContext({ storageState: optedIn });
-    await returnVisit.addInitScript(() => {
-      const play = HTMLMediaElement.prototype.play;
-      let first = true;
-      HTMLMediaElement.prototype.play = function (...args) {
-        if (first) {
-          first = false;
-          return Promise.reject(
-            new DOMException("Playback needs a gesture", "NotAllowedError"),
-          );
-        }
-        return play.apply(this, args);
-      };
-    });
-    const returnPage = await returnVisit.newPage();
-    await returnPage.goto(base + "/castle/hall/");
-    await ready(returnPage);
-    await returnPage.waitForFunction(() =>
-      document
-        .getElementById("music-status")
-        .textContent.includes("resume music"),
-    );
-    assert.equal(
-      await returnPage.evaluate(() => localStorage.getItem("castle-sound")),
-      "on",
-    );
-    await returnPage.locator("#music-toggle").click();
-    await returnPage.waitForFunction(
-      () => !document.getElementById("background-music").paused,
-    );
-    await returnPage.locator("#music-toggle").click();
-    const optedOut = await returnVisit.storageState();
-    await returnVisit.close();
-
-    const mutedVisit = await browser.newContext({ storageState: optedOut });
-    const mutedPage = await mutedVisit.newPage();
-    const mutedRequests = [];
-    mutedPage.on("request", (request) => {
-      if (request.url().endsWith(".mp3")) mutedRequests.push(request.url());
-    });
-    await mutedPage.goto(base + "/");
-    await ready(mutedPage);
-    assert.equal(
-      await mutedPage.evaluate(() => localStorage.getItem("castle-sound")),
-      "off",
-    );
-    assert.equal(
-      await mutedPage.locator("#music-toggle").getAttribute("aria-pressed"),
+      await restricted.locator("#music-toggle").getAttribute("aria-pressed"),
       "false",
     );
-    assert.deepEqual(
-      mutedRequests,
-      [],
-      "Remembered mute never starts an audio download",
+    assert.equal(
+      await restricted
+        .locator("#background-music")
+        .evaluate((audio) => audio.paused),
+      true,
     );
-    await mutedVisit.close();
+    await restricted.close();
 
     const failed = await browser.newPage();
     await failed.route("**/audio/landing-music.mp3", (route) => route.abort());
@@ -454,7 +417,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await nojs.close();
     console.log(
-      "PASS: opt-in music, looping, persistent preference, blocked-autoplay recovery, fresh playback on refresh/revisit, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
+      "PASS: opt-in music, looping, muted navigation/refresh/revisit, no preference storage, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
     );
   } finally {
     await browser.close();

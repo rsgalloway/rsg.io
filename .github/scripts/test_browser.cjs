@@ -63,7 +63,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
       await page
         .locator("[data-layer]")
         .evaluateAll((elements) => elements.map((el) => el.dataset.layer)),
-      ["1", "2", "3", "4", "5", "6", "7", "8"],
+      ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
     );
     assert.equal(
       await page
@@ -834,7 +834,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: independent star twinkle, paginated journal, Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: independent star twinkle, paginated journal, Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, nine layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();

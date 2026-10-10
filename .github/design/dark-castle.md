@@ -471,17 +471,13 @@ The supplied Ultima VII Roland MT-32 MP3s are copied unchanged: Main Menu
 `audio/interior-music.mp3`, shared by the Hall, reading rooms, and their content
 pages. Both loop at 35% volume through the shared `castle-sound.html` include.
 
-A small borderless speaker and Sound label sit opposite the map. Sound starts
-off on a fresh visit. Opting in enables music and exterior thunder together;
-local storage remembers that choice across visits and browser restarts. Existing
-session-only choices migrate on the next page load; session storage remains the
-fallback if local storage is unavailable. Playback positions are not saved or
-restored: every page load, refresh, revisit, and back/forward-cache return starts
-the page's track from the beginning. Previously stored positions are ignored.
-If the browser blocks automatic playback, the control allows an explicit click.
-Hiding the tab or muting pauses within the current page; returning to that tab
-or unmuting resumes the same playback until the page is left.
-Storage failure does not prevent the control working in the current document.
+A small borderless speaker and Sound label sit opposite the map. Every page load,
+refresh, navigation, and back/forward-cache return starts muted. Only an explicit
+Sound click starts music and (on the exterior) thunder. No preference or playback
+position is read from or written to local storage, session storage, or cookies;
+old saved values are ignored. Each new page starts its track from the beginning.
+Hiding the tab or muting pauses within the current document; returning to that
+tab or unmuting resumes only if sound was enabled on that document.
 
 Audio uses `preload="none"` and is excluded from scene-art warming. No audio
 is downloaded before opt-in. Playback errors have a live status, pending playback
@@ -522,3 +518,25 @@ above describe earlier iterations; those retired assets remain in Git history.
 The cloud renderer's source `clouds-hatched.png` moved to this private design
 folder's `dark-castle-layers/` directory, and `render_clouds.cjs` now reads it
 there. Only the exported continuous cloud bank needs to be published.
+
+## Delayed dragon visitor
+
+A ninth decorative plane sits above the castle, behind the foreground and enter
+link. After 60 seconds of visible, unpaused time on the entrance, a small dark
+stippled dragon descends from above the screen, facing the viewer. It brakes,
+grips the leftmost tall tower's crenellations with hooked claws, folds its wings,
+and stays perched. The landing takes 6.2 seconds and runs once per page visit.
+
+Four separate transparent images (`creatures/dragon-{flight,brake,settle,perch}.png`)
+replace the original sheet, removing neighboring-frame bleed. Screen-left horns,
+cheek, wing ribs and claws catch the light; the right side stays in deep shadow.
+Prompts and provenance are saved in `dark-castle-layers/dragon-prompts.json`.
+`_data/dragon.json` registers each pose; a canvas draws them at the same small
+on-screen scale without modifying the castle. The images load at low priority
+after the initial reveal, never blocking navigation or page visibility. Failure
+leaves the normal scene intact.
+
+Hidden tabs and the layer inspector's pause control stop the waiting clock and
+the landing. Reduced motion suppresses the visitor. The local layer review page
+adds a Preview dragon landing button; it bypasses the delay and inspector pause
+for review, but still respects reduced motion and tab visibility.

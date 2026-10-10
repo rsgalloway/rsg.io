@@ -220,6 +220,16 @@ summary:focus-visible {
 .layer-castle {
   z-index: 5;
 }
+/* The visitor perches above the castle, behind the nearer shoreline and UI. */
+.layer-dragon {
+  z-index: 5;
+}
+.dragon {
+  position: absolute;
+  width: 9.114583%; /* 140px in the registered 1536px scene. */
+  height: auto;
+  image-rendering: auto;
+}
 .layer-lake {
   z-index: 6;
 }

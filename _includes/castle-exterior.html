@@ -98,3 +98,10 @@
 <a class="scene-enter scene-layer" data-layer="8" data-layer-name="Click to enter" href="{{ '/castle/hall/' | relative_url }}" aria-label="Enter the castle">
   <span class="enter-prompt" aria-hidden="true"><span>✦</span> Click to enter <span>✦</span></span>
 </a>
+
+<div class="scene-layer layer-dragon" data-layer="9" data-layer-name="Dragon — delayed landing" aria-hidden="true">
+  <canvas class="dragon" width="512" height="512" hidden></canvas>
+  <script type="application/json" class="dragon-frame-data">[
+    {% for frame in site.data.dragon.frames %}{"src": {{ frame.src | relative_url | jsonify }}, "offsetY": {{ frame.offsetY }}}{% unless forloop.last %},{% endunless %}{% endfor %}
+  ]</script>
+</div>

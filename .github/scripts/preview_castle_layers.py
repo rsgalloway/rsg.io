@@ -19,6 +19,7 @@ controls = r'''
 <label><input type="checkbox" id="transparency-grid"> Transparency grid</label>
 <label>Lighting <select id="lighting-mode"><option value="auto">Automatic lightning</option><option value="off">Night — hold</option><option value="lit">Light from left — hold</option></select></label>
 <button id="flash-lightning">Preview flash</button>
+<button id="preview-dragon">Preview dragon landing</button>
 <a href="/" style="color:white">Return to entrance</a>
 </details>
 <script>
@@ -44,6 +45,7 @@ controls = r'''
  };
  document.querySelector('#lighting-mode').onchange = event => scene.dataset.lightningReview = event.target.value;
  document.querySelector('#flash-lightning').onclick = () => scene.dispatchEvent(new Event('castle-lightning-preview'));
+ document.querySelector('#preview-dragon').onclick = () => scene.dispatchEvent(new Event('castle-dragon-preview'));
  document.querySelector('#transparency-grid').onchange = event => scene.classList.toggle('review-grid',event.target.checked);
  // Inspection clicks should not enter the hall.
  scene.querySelector('.scene-enter').addEventListener('click', event => event.preventDefault());

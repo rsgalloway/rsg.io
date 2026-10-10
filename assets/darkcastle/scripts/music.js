@@ -1,43 +1,10 @@
-/* Remember the sound preference; each page visit starts its track afresh. */
+/* Sound is opt-in for this document only; navigation always starts muted. */
 (() => {
   const audio = document.getElementById("background-music");
   const button = document.getElementById("music-toggle");
   const status = document.getElementById("music-status");
   if (!audio || !button || !status) return;
-  const preferenceKey = "castle-sound";
-  const read = (key) => {
-    if (key === preferenceKey) {
-      try {
-        const value = localStorage.getItem(key);
-        if (value !== null) return value;
-      } catch {
-        /* Fall back to the current session when storage is restricted. */
-      }
-    }
-    try {
-      return sessionStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  };
-  const write = (key, value) => {
-    if (key === preferenceKey) {
-      try {
-        localStorage.setItem(key, String(value));
-      } catch {
-        /* Optional storage. */
-      }
-    }
-    try {
-      sessionStorage.setItem(key, String(value));
-    } catch {
-      /* Optional storage. */
-    }
-  };
-  const savedPreference = read(preferenceKey);
-  // Carry an existing session-only choice into persistent storage, too.
-  if (savedPreference !== null) write(preferenceKey, savedPreference);
-  let enabled = savedPreference === "on";
+  let enabled = false;
   let pending = false;
   let attempt = 0;
   let leaving = false;
@@ -92,7 +59,6 @@
   render();
   button.addEventListener("click", () => {
     enabled = !enabled;
-    write(preferenceKey, enabled ? "on" : "off");
     if (enabled) start();
     else {
       suspend();
@@ -115,6 +81,7 @@
   });
   window.addEventListener("pagehide", () => {
     leaving = true;
+    enabled = false;
     suspend();
   });
   window.addEventListener("pageshow", (event) => {
@@ -122,12 +89,8 @@
     leaving = false;
     // Back/forward cache can restore the old audio element and playback time.
     if (audio.readyState >= 1) audio.currentTime = 0;
-    enabled = read(preferenceKey) === "on";
-    start(true);
-    render();
-  });
-  // Wait until all deferred scripts (including the thunder listener) are ready.
-  document.addEventListener("DOMContentLoaded", () => start(true), {
-    once: true,
+    enabled = false;
+    status.textContent = "";
+    suspend();
   });
 })();
