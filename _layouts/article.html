@@ -1,12 +1,16 @@
-{% assign library_room = false %}
-{% if page.url contains '/blog/' %}{% assign library_room = true %}{% endif %}
+{% assign room = false %}
+{% if page.url contains '/blog/' %}
+{% assign room = site.data.reading_rooms.library %}
+{% elsif page.url contains '/about/' %}
+{% assign room = site.data.reading_rooms.observatory %}
+{% endif %}
 <!doctype html>
 <html lang="en">
 <head>{% include castle-head.html %}</head>
-<body class="reading-page{% if library_room %} room-page room-library{% endif %}">
+<body class="reading-page{% if room %} room-page room-{{ room.id }}{% endif %}">
   <a class="skip-link" href="#content">Skip to content</a>
-  {% if library_room %}
-  <img class="room-backdrop" src="{{ '/assets/darkcastle/scenes/library.png' | relative_url }}" width="1536" height="1024" alt="" fetchpriority="high">
+  {% if room %}
+  <img class="room-backdrop" src="{{ room.image | relative_url }}" width="1536" height="1024" alt="" fetchpriority="high">
   <div class="scene-menu" id="scene-menu">{% include castle-map.html %}</div>
   {% else %}
   <header class="reading-header">
@@ -14,15 +18,15 @@
     {% include castle-map.html %}
   </header>
   {% endif %}
-  <main class="reading-shell{% if library_room %} finder-window{% endif %}" id="content" tabindex="-1">
-    {% if library_room %}
-    {% include reading-window-titlebar.html title="The Library" %}
+  <main class="reading-shell{% if room %} finder-window{% endif %}" id="content" tabindex="-1">
+    {% if room %}
+    {% include reading-window-titlebar.html title=room.title %}
     <div class="window-content">
     {% endif %}
-    <div class="reading-breadcrumb">{% if library_room and page.url != '/blog/' %}<a href="{{ '/blog/' | relative_url }}">← Library</a>{% else %}<a href="{{ '/castle/hall/' | relative_url }}">← Great Hall</a>{% endif %}<span>{% if page.url contains '/blog/' %}The Library{% elsif page.url contains '/projects/' %}The Workshop{% elsif page.url contains '/captainslog/' %}The Journal{% elsif page.url contains '/about/' %}The Observatory{% else %}The Directory{% endif %}</span></div>
+    <div class="reading-breadcrumb">{% if room.id == 'library' and page.url != '/blog/' %}<a href="{{ '/blog/' | relative_url }}">← Library</a>{% else %}<a href="{{ '/castle/hall/' | relative_url }}">← Great Hall</a>{% endif %}<span>{% if page.url contains '/blog/' %}The Library{% elsif page.url contains '/projects/' %}The Workshop{% elsif page.url contains '/captainslog/' %}The Journal{% elsif page.url contains '/about/' %}The Observatory{% else %}The Directory{% endif %}</span></div>
     <article class="prose">
       <header class="article-heading">
-        {% unless library_room %}<p class="eyebrow">Ryan Galloway / {% if page.log_page %}Field notes{% else %}Engineering & exploration{% endif %}</p>{% endunless %}
+        {% unless room %}<p class="eyebrow">Ryan Galloway / {% if page.log_page %}Field notes{% else %}Engineering & exploration{% endif %}</p>{% endunless %}
         <h1>{{ page.title | escape }}</h1>
         {% if page.date %}<p class="article-date">{{ page.date | date: '%B %-d, %Y' }}</p>{% endif %}
         {% if page.log_page %}<p class="article-date">Page {{ page.log_page }} of {{ page.log_pages }}</p>{% endif %}
@@ -37,7 +41,7 @@
     </nav>
     {% endif %}
     <footer class="reading-footer"><a href="{{ '/castle/hall/' | relative_url }}">Return to the hall</a><span>Same castle. New stories.</span><a href="https://github.com/rsgalloway">GitHub ↗</a></footer>
-    {% if library_room %}</div>{% endif %}
+    {% if room %}</div>{% endif %}
   </main>
 </body>
 </html>

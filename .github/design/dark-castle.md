@@ -386,5 +386,16 @@ Library. These are ordinary links, with no decorative nonfunctional controls.
 The page scrolls normally over a stationary room; no nested reading scrollbar
 or JavaScript is required. On mobile the panel nearly fills the width and leaves
 a strip of room artwork above it. All content and existing URLs are retained.
-Other reading rooms retain their previous layout pending review of this first
-room. The Great Hall artwork, exterior animation, and audio are unchanged.
+The Workshop and other reading pages retain their previous layout. The Great Hall artwork, exterior animation, and audio are unchanged.
+
+## Observatory reading-window draft
+
+The About page at `/about/` now uses the shared Mac-style reading window over
+a static Observatory illustration. It matches the Hall's fine stippling, with
+a telescope at the left opening and an armillary sphere and astronomical chart
+at the right. The About text and external links remain intact. The title bar
+names the Observatory, and its close link returns to the Great Hall.
+
+`_data/reading_rooms.json` holds each illustrated room's title and artwork path;
+the article layout chooses the Library for writing and Observatory for About.
+Both use the same window markup, document scrolling, and responsive styling.

@@ -1,0 +1,12 @@
+{
+  "library": {
+    "id": "library",
+    "title": "The Library",
+    "image": "/assets/darkcastle/scenes/library.png"
+  },
+  "observatory": {
+    "id": "observatory",
+    "title": "The Observatory",
+    "image": "/assets/darkcastle/scenes/observatory.png"
+  }
+}

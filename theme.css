@@ -616,6 +616,7 @@ summary:focus-visible {
 
 /* Illustrated reading rooms: a document window over a stationary room. */
 .room-page {
+  display: flow-root;
   isolation: isolate;
   min-height: 100svh;
   background: #000;
