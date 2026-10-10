@@ -16,20 +16,37 @@
       sessionStorage.removeItem(handoffKey);
       const handoff = JSON.parse(saved);
       const navigation = performance.getEntriesByType("navigation")[0];
-      return !!(
+      const valid =
         handoff &&
         navigation?.type === "navigate" &&
         handoff.to === pageURL(location.href) &&
         handoff.from === pageURL(document.referrer || "/") &&
         document.referrer &&
         Date.now() >= handoff.created &&
-        Date.now() - handoff.created < 30000
-      );
+        Date.now() - handoff.created < 30000;
+      return valid ? handoff : null;
     } catch {
-      return false;
+      return null;
     }
   };
-  let enabled = consumeHandoff();
+  const incoming = consumeHandoff();
+  let enabled = !!incoming;
+  let resumeAt =
+    audio.dataset.track === "interior" &&
+    incoming?.source === audio.src &&
+    Number.isFinite(incoming.position) &&
+    incoming.position >= 0
+      ? incoming.position
+      : null;
+  const restorePosition = () => {
+    if (resumeAt === null || audio.readyState < 1) return;
+    const position = resumeAt;
+    resumeAt = null;
+    if (Number.isFinite(audio.duration) && audio.duration > 0)
+      audio.currentTime = position % audio.duration;
+  };
+  // Seek as soon as metadata is ready, before the new player becomes audible.
+  audio.addEventListener("loadedmetadata", restorePosition);
   let destination;
   // Capture also sees links held by the artwork loader until decoding finishes.
   document.addEventListener(
@@ -91,6 +108,7 @@
     announceSound(true);
     render();
     if (audio.error) audio.load();
+    restorePosition();
     audio
       .play()
       .then(() => {
@@ -145,6 +163,10 @@
             from: pageURL(location.href),
             to: destination,
             created: Date.now(),
+            ...(audio.dataset.track === "interior" && {
+              source: audio.src,
+              position: resumeAt ?? audio.currentTime,
+            }),
           }),
         );
     } catch {
@@ -159,6 +181,7 @@
     if (!event.persisted) return;
     leaving = false;
     consumeHandoff();
+    resumeAt = null;
     // Back/forward cache can restore the old audio element and playback time.
     if (audio.readyState >= 1) audio.currentTime = 0;
     enabled = false;

@@ -172,6 +172,12 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     await ready(page);
     await assertPlaying();
     assert.ok(
+      await page
+        .locator("#background-music")
+        .evaluate((audio) => audio.currentTime < 5),
+      "Entering the Hall starts the different interior track at the beginning",
+    );
+    assert.ok(
       (await page.locator("#background-music").getAttribute("src")).endsWith(
         "interior-music.mp3",
       ),
@@ -192,6 +198,26 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
         .evaluate((audio) => audio.currentTime < 5),
       "Explicit playback after refresh starts at zero",
     );
+    await page.locator("#background-music").evaluate((audio) => {
+      audio.currentTime = 37;
+    });
+    const assertContinued = async (previous) => {
+      await page.waitForFunction((previous) => {
+        const audio = document.getElementById("background-music");
+        return (
+          !audio.paused &&
+          !audio.seeking &&
+          audio.currentTime >= previous - 0.25
+        );
+      }, previous);
+      const current = await page
+        .locator("#background-music")
+        .evaluate((audio) => audio.currentTime);
+      assert.ok(
+        current < previous + 10,
+        "Interior track resumes near its departure position",
+      );
+    };
     for (const route of [
       "/blog/",
       "/projects/",
@@ -199,12 +225,45 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
       "/captainslog/",
       "/",
     ]) {
+      const previous = await page
+        .locator("#background-music")
+        .evaluate((audio) => audio.currentTime);
       await page.locator(".castle-map summary").click();
       await page.locator(`.castle-map a[href="${route}"]`).click();
       await page.waitForURL(base + route);
       await ready(page);
       await assertPlaying();
-      if (route === "/") await page.waitForSelector("[data-thunder-ready]");
+      if (route === "/") {
+        assert.ok(
+          await page
+            .locator("#background-music")
+            .evaluate((audio) => audio.currentTime < 5),
+          "Landing track starts fresh instead of inheriting the interior position",
+        );
+        await page.waitForSelector("[data-thunder-ready]");
+      } else {
+        await assertContinued(previous);
+      }
+      if (route === "/blog/") {
+        const article = page.locator('.prose a[href^="/blog/"]').first();
+        const href = await article.getAttribute("href");
+        const beforeArticle = await page
+          .locator("#background-music")
+          .evaluate((audio) => audio.currentTime);
+        await article.click();
+        await page.waitForURL(base + href);
+        await ready(page);
+        await assertPlaying();
+        await assertContinued(beforeArticle);
+        const beforeReturn = await page
+          .locator("#background-music")
+          .evaluate((audio) => audio.currentTime);
+        await page.locator('.reading-breadcrumb a[href="/blog/"]').click();
+        await page.waitForURL(base + "/blog/");
+        await ready(page);
+        await assertPlaying();
+        await assertContinued(beforeReturn);
+      }
     }
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 12;
@@ -441,7 +500,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await nojs.close();
     console.log(
-      "PASS: opt-in music, looping, sound retained across internal links, muted refresh/revisit and muted navigation, no persistent preference storage, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
+      "PASS: opt-in music, looping, sound retained across internal links, interior position retained across rooms/articles, separate landing track, muted refresh/revisit and muted navigation, no persistent preference storage, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
     );
   } finally {
     await browser.close();

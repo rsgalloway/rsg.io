@@ -476,10 +476,15 @@ new visits, and back/forward-cache returns start muted. After an explicit Sound
 click, ordinary same-tab internal links carry sound opt-in to the next page.
 A one-use session-storage handoff is written on departure, checked against the
 source, destination, navigation type, and a 30-second expiry, then immediately
-removed on arrival. It stores no playback position or lasting toggle preference;
-old saved preferences are ignored. Modified clicks and new tabs do not carry it.
-Each new page starts its track from the beginning. Storage restrictions or
-browser autoplay restrictions fall back to the manual Sound control.
+removed on arrival. For the interior track it also carries the source URL and
+playback position, so rooms and articles resume where the preceding page left
+off. The destination seeks once metadata is available; full page loads still
+introduce a brief audio gap. Switching between the landing and interior tracks
+starts the new track from the beginning. Refreshes and new visits discard the
+handoff and start fresh when sound is enabled again. No lasting toggle preference
+or playback history is kept, and old saved preferences are ignored. Modified
+clicks and new tabs do not carry the handoff. Storage restrictions or browser
+autoplay restrictions fall back to the manual Sound control.
 Hiding the tab or muting pauses within the current document; returning to that
 tab or unmuting resumes only if sound was enabled on that document.
 
