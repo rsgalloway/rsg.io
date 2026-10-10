@@ -1,10 +1,62 @@
-/* Sound is opt-in for this document only; navigation always starts muted. */
+/* Carry explicit sound opt-in across internal links, never refreshes or visits. */
 (() => {
   const audio = document.getElementById("background-music");
   const button = document.getElementById("music-toggle");
   const status = document.getElementById("music-status");
   if (!audio || !button || !status) return;
-  let enabled = false;
+  const handoffKey = "castle-sound-handoff";
+  const pageURL = (value) => {
+    const url = new URL(value, location.href);
+    url.hash = "";
+    return url.href;
+  };
+  const consumeHandoff = () => {
+    try {
+      const saved = sessionStorage.getItem(handoffKey);
+      sessionStorage.removeItem(handoffKey);
+      const handoff = JSON.parse(saved);
+      const navigation = performance.getEntriesByType("navigation")[0];
+      return !!(
+        handoff &&
+        navigation?.type === "navigate" &&
+        handoff.to === pageURL(location.href) &&
+        handoff.from === pageURL(document.referrer || "/") &&
+        document.referrer &&
+        Date.now() >= handoff.created &&
+        Date.now() - handoff.created < 30000
+      );
+    } catch {
+      return false;
+    }
+  };
+  let enabled = consumeHandoff();
+  let destination;
+  // Capture also sees links held by the artwork loader until decoding finishes.
+  document.addEventListener(
+    "click",
+    (event) => {
+      destination = undefined;
+      const link = event.target.closest?.("a[href]");
+      if (
+        !link ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.hasAttribute("download") ||
+        (link.target && link.target !== "_self")
+      )
+        return;
+      const url = new URL(link.href, location.href);
+      if (
+        url.origin === location.origin &&
+        pageURL(url) !== pageURL(location.href)
+      )
+        destination = pageURL(url);
+    },
+    true,
+  );
   let pending = false;
   let attempt = 0;
   let leaving = false;
@@ -57,6 +109,10 @@
   };
   button.hidden = false;
   render();
+  // Let the deferred lightning controller subscribe before handing sound over.
+  document.addEventListener("DOMContentLoaded", () => start(true), {
+    once: true,
+  });
   button.addEventListener("click", () => {
     enabled = !enabled;
     if (enabled) start();
@@ -80,6 +136,21 @@
     else start(true);
   });
   window.addEventListener("pagehide", () => {
+    try {
+      sessionStorage.removeItem(handoffKey);
+      if (enabled && destination)
+        sessionStorage.setItem(
+          handoffKey,
+          JSON.stringify({
+            from: pageURL(location.href),
+            to: destination,
+            created: Date.now(),
+          }),
+        );
+    } catch {
+      // Storage restrictions must not prevent navigation or manual playback.
+    }
+    destination = undefined;
     leaving = true;
     enabled = false;
     suspend();
@@ -87,6 +158,7 @@
   window.addEventListener("pageshow", (event) => {
     if (!event.persisted) return;
     leaving = false;
+    consumeHandoff();
     // Back/forward cache can restore the old audio element and playback time.
     if (audio.readyState >= 1) audio.currentTime = 0;
     enabled = false;

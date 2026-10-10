@@ -51,7 +51,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
       for (const method of ["getItem", "setItem"]) {
         const original = Storage.prototype[method];
         Storage.prototype[method] = function (key, ...args) {
-          if (key.startsWith("castle-"))
+          if (key.startsWith("castle-") && key !== "castle-sound-handoff")
             window.soundStorageAccesses.push({ method, key });
           return original.call(this, key, ...args);
         };
@@ -137,7 +137,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
       assert.deepEqual(
         await page.evaluate(() => window.soundStorageAccesses),
         [],
-        "Sound never reads or writes saved preferences/positions",
+        "Sound never reads or writes persistent preferences/positions",
       );
     };
     const enableSound = async () => {
@@ -150,22 +150,32 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
         [],
       );
     };
-    const beforeHall = requests.length;
+    const assertPlaying = async () => {
+      await page.waitForFunction(
+        () => !document.getElementById("background-music").paused,
+      );
+      assert.equal(await toggle.getAttribute("aria-pressed"), "true");
+      assert.equal(
+        await page.evaluate(() =>
+          sessionStorage.getItem("castle-sound-handoff"),
+        ),
+        null,
+        "The navigation handoff is consumed immediately",
+      );
+      assert.deepEqual(
+        await page.evaluate(() => window.soundStorageAccesses),
+        [],
+      );
+    };
     await page.locator(".scene-enter").click({ position: { x: 600, y: 500 } });
     await page.waitForURL("**/castle/hall/");
     await ready(page);
-    await assertMuted();
-    assert.equal(
-      requests.length,
-      beforeHall,
-      "Entering the Hall does not start or download music",
-    );
+    await assertPlaying();
     assert.ok(
       (await page.locator("#background-music").getAttribute("src")).endsWith(
         "interior-music.mp3",
       ),
     );
-    await enableSound();
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 23;
     });
@@ -189,18 +199,12 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
       "/captainslog/",
       "/",
     ]) {
-      const beforeNavigation = requests.length;
       await page.locator(".castle-map summary").click();
       await page.locator(`.castle-map a[href="${route}"]`).click();
       await page.waitForURL(base + route);
       await ready(page);
-      await assertMuted();
-      assert.equal(
-        requests.length,
-        beforeNavigation,
-        "Navigation does not authorize audio",
-      );
-      await enableSound();
+      await assertPlaying();
+      if (route === "/") await page.waitForSelector("[data-thunder-ready]");
     }
     await page.locator("#background-music").evaluate((audio) => {
       audio.currentTime = 12;
@@ -216,6 +220,26 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
         new PageTransitionEvent("pageshow", { persisted: true }),
       );
     });
+    await assertMuted();
+    // Muted navigation must neither start nor download audio.
+    const beforeMutedNavigation = requests.length;
+    await page.locator(".scene-enter").click({ position: { x: 600, y: 500 } });
+    await page.waitForURL("**/castle/hall/");
+    await ready(page);
+    await assertMuted();
+    assert.equal(requests.length, beforeMutedNavigation);
+    // Explicitly muting clears consent for the next internal page, too.
+    await enableSound();
+    await toggle.click();
+    await page.locator(".castle-map summary").click();
+    await page.locator('.castle-map a[href="/blog/"]').click();
+    await page.waitForURL("**/blog/");
+    await ready(page);
+    await assertMuted();
+    // Returning directly is a fresh visit, even after playing on another page.
+    await enableSound();
+    await page.goto(base + "/");
+    await ready(page);
     await assertMuted();
     assert.deepEqual(errors, []);
     await page.close();
@@ -417,7 +441,7 @@ const base = process.env.CASTLE_PREVIEW_URL || "http://127.0.0.1:4000";
     );
     await nojs.close();
     console.log(
-      "PASS: opt-in music, looping, muted navigation/refresh/revisit, no preference storage, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
+      "PASS: opt-in music, looping, sound retained across internal links, muted refresh/revisit and muted navigation, no persistent preference storage, keyboard/touch controls, background pause, synchronized thunder, reduced motion, failed media, and no-JavaScript controls.",
     );
   } finally {
     await browser.close();

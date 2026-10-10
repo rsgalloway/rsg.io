@@ -471,11 +471,15 @@ The supplied Ultima VII Roland MT-32 MP3s are copied unchanged: Main Menu
 `audio/interior-music.mp3`, shared by the Hall, reading rooms, and their content
 pages. Both loop at 35% volume through the shared `castle-sound.html` include.
 
-A small borderless speaker and Sound label sit opposite the map. Every page load,
-refresh, navigation, and back/forward-cache return starts muted. Only an explicit
-Sound click starts music and (on the exterior) thunder. No preference or playback
-position is read from or written to local storage, session storage, or cookies;
-old saved values are ignored. Each new page starts its track from the beginning.
+A small borderless speaker and Sound label sit opposite the map. Refreshes,
+new visits, and back/forward-cache returns start muted. After an explicit Sound
+click, ordinary same-tab internal links carry sound opt-in to the next page.
+A one-use session-storage handoff is written on departure, checked against the
+source, destination, navigation type, and a 30-second expiry, then immediately
+removed on arrival. It stores no playback position or lasting toggle preference;
+old saved preferences are ignored. Modified clicks and new tabs do not carry it.
+Each new page starts its track from the beginning. Storage restrictions or
+browser autoplay restrictions fall back to the manual Sound control.
 Hiding the tab or muting pauses within the current document; returning to that
 tab or unmuting resumes only if sound was enabled on that document.
 
