@@ -13,5 +13,10 @@
     "id": "workshop",
     "title": "The Workshop",
     "image": "/assets/darkcastle/scenes/workshop.png"
+  },
+  "journal": {
+    "id": "journal",
+    "title": "Captain's Log",
+    "image": "/assets/darkcastle/scenes/journal-desk.png"
   }
 }

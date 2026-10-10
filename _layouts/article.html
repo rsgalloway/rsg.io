@@ -5,6 +5,8 @@
 {% assign room = site.data.reading_rooms.workshop %}
 {% elsif page.url contains '/about/' %}
 {% assign room = site.data.reading_rooms.observatory %}
+{% elsif page.url contains '/captainslog/' %}
+{% assign room = site.data.reading_rooms.journal %}
 {% endif %}
 <!doctype html>
 <html lang="en">

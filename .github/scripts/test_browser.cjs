@@ -322,6 +322,24 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page.locator('[data-hotspot="journal"]').click();
     await page.waitForURL("**/captainslog/");
     assert.equal(await page.locator("h3").count(), 5);
+    assert.equal(await page.locator(".finder-window").count(), 1);
+    assert.equal(
+      await page.locator(".journal-book, .reading-header").count(),
+      0,
+    );
+    assert.equal(
+      await page.locator(".window-title").innerText(),
+      "Captain's Log",
+    );
+    await page.locator(".room-backdrop").evaluate((img) => img.decode());
+    const deskBounds = await page.locator(".room-backdrop").boundingBox();
+    await page.evaluate(() => scrollTo(0, 650));
+    assert.ok(await page.evaluate(() => scrollY > 500));
+    assert.deepEqual(
+      await page.locator(".room-backdrop").boundingBox(),
+      deskBounds,
+    );
+    await page.evaluate(() => scrollTo(0, 0));
     await screenshot(page, "log");
     await page.getByRole("link", { name: "Older entries →" }).click();
     await page.waitForURL("**/page/2/");
@@ -329,6 +347,9 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await page.getByRole("link", { name: "Older entries →" }).click();
     await page.waitForURL("**/page/3/");
     assert.equal(await page.locator("h3").count(), 1);
+    assert.equal(await page.locator(".finder-window").count(), 1);
+    assert.equal(await page.locator('.pagination a[rel="next"]').count(), 0);
+    await screenshot(page, "log-last-page");
     await page.goBack();
     await page.reload();
     assert.equal(await page.locator("h3").count(), 5);
@@ -543,6 +564,11 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await nojs.waitForURL("**/captainslog/");
     await nojs.getByRole("link", { name: "Older entries →" }).click();
     await nojs.waitForURL("**/page/2/");
+    assert.equal(await nojs.locator(".finder-window").count(), 1);
+    await nojs.getByRole("link", { name: "← Newer entries" }).click();
+    await nojs.waitForURL("**/captainslog/");
+    await nojs.locator(".window-close").click();
+    await nojs.waitForURL("**/castle/hall/");
 
     await nojs.goto(base + "/blog/");
     await nojs.locator(".prose li a").first().click();
@@ -596,6 +622,10 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
         );
       }
 
+      if (route === "/captainslog/") {
+        assert.equal(await mobile.locator(".finder-window").isVisible(), true);
+        assert.equal(await mobile.locator("h3").count(), 5);
+      }
       await screenshot(mobile, name);
       assert.equal(
         await mobile.evaluate(
@@ -608,6 +638,10 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await mobile.getByRole("link", { name: "← Great Hall" }).tap();
     await mobile.waitForURL("**/castle/hall/");
     await mobile.locator('[data-hotspot="journal"]').tap();
+    await mobile.waitForURL("**/captainslog/");
+    await mobile.getByRole("link", { name: "Older entries →" }).tap();
+    await mobile.waitForURL("**/page/2/");
+    await mobile.getByRole("link", { name: "← Newer entries" }).tap();
     await mobile.waitForURL("**/captainslog/");
     // Hold the cloud download: the initial DOM must already reference the final
     // artwork, with no fallback image or canvas to swap in after decoding.
@@ -680,7 +714,7 @@ const output = process.env.CASTLE_SCREENSHOT_DIR;
     await pending.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
+      "PASS: paginated journal, Library, Observatory and Workshop reading windows, article navigation and document scrolling, synchronized directional lightning, eight layers, distinct water frames, pause/resume, navigation, pagination, keyboard, skip, map, back/reload, reduced motion, no-JS, mobile and touch.",
     );
   } finally {
     await browser.close();

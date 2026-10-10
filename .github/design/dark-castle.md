@@ -386,7 +386,7 @@ Library. These are ordinary links, with no decorative nonfunctional controls.
 The page scrolls normally over a stationary room; no nested reading scrollbar
 or JavaScript is required. On mobile the panel nearly fills the width and leaves
 a strip of room artwork above it. All content and existing URLs are retained.
-The Journal and Directory retain their previous reading layout. The Great Hall artwork, exterior animation, and audio are unchanged.
+The Directory retains its previous reading layout. The Great Hall artwork, exterior animation, and audio are unchanged.
 
 ## Observatory reading-window draft
 
@@ -411,3 +411,19 @@ The index is titled Workshop, with existing project descriptions and URLs kept
 intact. Project breadcrumbs return to the Workshop; the window close control
 returns to the Hall. The same responsive window, stationary background, and
 normal document scrolling apply without additional JavaScript.
+
+## Captain's Log reading-window draft
+
+Captain's Log uses the same Mac Finder-style reading window as the Library,
+Observatory, and Workshop. Its background remains the close-up engraved writing
+desk, with candle, quill, and inkwell matching the Hall's fine monochrome style.
+The desk prompt is saved with the room artwork.
+
+The shared article layout and journal entry in `_data/reading_rooms.json` supply
+the title bar, functional close control, white reading surface, responsive layout,
+and normal document scrolling. No separate book layout or book-specific CSS is
+used. The close control returns to the Great Hall.
+
+The existing single Markdown source, newest-first order, five entries per page,
+three current routes, and older/newer links are unchanged. No additional
+JavaScript is needed.
