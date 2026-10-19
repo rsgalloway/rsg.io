@@ -6,6 +6,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Oct. 17, 2026
+
+Released [envstack 1.0.5](https://github.com/rsgalloway/envstack/releases/tag/1.0.5), with a substantial overhaul of layered variable resolution. Fixed some particularly stubborn inheritance and self-reference problems, expanded the examples for deploying Python tools with distman, and moved the documentation to mkpages.
+
 ### Captain’s log, Oct. 8, 2026
 
 Released [pathbase 0.2.0](https://github.com/rsgalloway/pathbase/releases/tag/0.2.0), adding per-template token rules with inline choices and layered regex validation. Path templates can now enforce naming conventions rather than merely parse filenames. Also migrated the documentation build to mkpages.
