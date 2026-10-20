@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Appending to PATH Is a Fold, Not an Assignment"
 date: 2026-10-19
 description: "Layered environments cannot be resolved by merging dictionaries and expanding variables afterward. Self-references turn path composition into a fold over definition history."

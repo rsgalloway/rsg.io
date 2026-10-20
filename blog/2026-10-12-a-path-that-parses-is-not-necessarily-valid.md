@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "A Path That Parses Is Not Necessarily Valid"
 date: 2026-10-12
 description: "Path templates describe structure. Production conventions also need vocabulary, context, and rules that can vary by project and template."

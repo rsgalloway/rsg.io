@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title: "Your Agent Can Be Nondeterministic. Its Workflow Shouldn't Be."
 date: 2026-10-05
 description: "LLM output may vary from run to run. That does not excuse workflows that cannot explain what ran, what changed, or where a result came from."
