@@ -6,6 +6,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Nov. 3, 2026
+
+Working on a new `distman install` command to support installing packages directly from PyPI or local Python projects. The goal is to bring package installation and distribution together under one tool, with a familiar pip-like interface and support for multiple platforms and Python runtimes.
+
 ### Captain’s log, Oct. 17, 2026
 
 Released [envstack 1.0.5](https://github.com/rsgalloway/envstack/releases/tag/1.0.5), with a substantial overhaul of layered variable resolution. Fixed some particularly stubborn inheritance and self-reference problems, expanded the examples for deploying Python tools with distman, and moved the documentation to mkpages.
