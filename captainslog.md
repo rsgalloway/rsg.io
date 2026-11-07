@@ -6,6 +6,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Nov. 6, 2026
+
+Received the first external contribution to Subfork's public examples repository: seven reusable composite graphs built entirely from existing nodes. Still under review, but it's encouraging to see someone else building on the platform. The whole point of Subfork is composability, and this is a small but meaningful step toward that.
+
 ### Captain’s log, Nov. 3, 2026
 
 Working on a new `distman install` command to support installing packages directly from PyPI or local Python projects. The goal is to bring package installation and distribution together under one tool, with a familiar pip-like interface and support for multiple platforms and Python runtimes.
