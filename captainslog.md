@@ -6,6 +6,16 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Nov. 10, 2026
+
+Released [distman 0.9.0](https://github.com/rsgalloway/distman/releases/tag/0.9.0), a significant milestone toward a more complete software distribution and environment management system.
+
+Distman can now install Python packages directly from PyPI, requirements files, or local projects, deploying them into managed, versioned filesystem locations. It also supports platform- and Python-runtime-specific packages, dependency validation, package removal, and recovery from interrupted deployments.
+
+The goal is to bring package installation, software distribution, and environment management together under one system, particularly for production pipelines where software must be deployed consistently across machines, platforms, and runtimes.
+
+[Installation documentation](https://distman.dev/install/)
+
 ### Captain’s log, Nov. 6, 2026
 
 Received the first external contribution to Subfork's public examples repository: seven reusable composite graphs built entirely from existing nodes. Still under review, but it's encouraging to see someone else building on the platform. The whole point of Subfork is composability, and this is a small but meaningful step toward that.
