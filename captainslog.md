@@ -6,6 +6,10 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Nov. 12, 2026
+
+Released [hashio 0.5.2](https://github.com/rsgalloway/hashio/releases/tag/0.5.2) and [0.5.3](https://github.com/rsgalloway/hashio/releases/tag/0.5.3), fixing Python 3.14 multiprocessing compatibility and adding [pyseq integration](https://github.com/rsgalloway/hashio/pull/71) for computing composite hashes of file sequences. Nice to see two of my open-source projects working together, and external user feedback helping drive improvements.
+
 ### Captain’s log, Nov. 10, 2026
 
 Released [distman 0.9.0](https://github.com/rsgalloway/distman/releases/tag/0.9.0), a significant milestone toward a more complete software distribution and environment management system.
