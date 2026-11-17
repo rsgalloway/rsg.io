@@ -6,6 +6,28 @@ permalink: /captainslog/
 
 Newest-first notes on shipped work, releases, and smaller milestones that do not need a full article.
 
+### Captain’s log, Nov. 12, 2026
+
+Released [hashio 0.5.2](https://github.com/rsgalloway/hashio/releases/tag/0.5.2) and [0.5.3](https://github.com/rsgalloway/hashio/releases/tag/0.5.3), fixing Python 3.14 multiprocessing compatibility and adding [pyseq integration](https://github.com/rsgalloway/hashio/pull/71) for computing composite hashes of file sequences. Nice to see two of my open-source projects working together, and external user feedback helping drive improvements.
+
+### Captain’s log, Nov. 10, 2026
+
+Released [distman 0.9.0](https://github.com/rsgalloway/distman/releases/tag/0.9.0), a significant milestone toward a more complete software distribution and environment management system.
+
+Distman can now install Python packages directly from PyPI, requirements files, or local projects, deploying them into managed, versioned filesystem locations. It also supports platform- and Python-runtime-specific packages, dependency validation, package removal, and recovery from interrupted deployments.
+
+The goal is to bring package installation, software distribution, and environment management together under one system, particularly for production pipelines where software must be deployed consistently across machines, platforms, and runtimes.
+
+[Installation documentation](https://distman.dev/install/)
+
+### Captain’s log, Nov. 6, 2026
+
+Received the first external contribution to Subfork's public examples repository: seven reusable composite graphs built entirely from existing nodes. Still under review, but it's encouraging to see someone else building on the platform. The whole point of Subfork is composability, and this is a small but meaningful step toward that.
+
+### Captain’s log, Nov. 3, 2026
+
+Working on a new `distman install` command to support installing packages directly from PyPI or local Python projects. The goal is to bring package installation and distribution together under one tool, with a familiar pip-like interface and support for multiple platforms and Python runtimes.
+
 ### Captain’s log, Oct. 17, 2026
 
 Released [envstack 1.0.5](https://github.com/rsgalloway/envstack/releases/tag/1.0.5), with a substantial overhaul of layered variable resolution. Fixed some particularly stubborn inheritance and self-reference problems, expanded the examples for deploying Python tools with distman, and moved the documentation to mkpages.
