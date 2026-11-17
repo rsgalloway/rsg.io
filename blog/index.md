@@ -6,6 +6,8 @@ permalink: /blog/
 
 Longer notes on engineering, open source tooling, and the tradeoffs behind small durable systems.
 
+- 2026-11-16: [Installing Software Is Not the Same as Deploying It](/blog/installing-software-is-not-the-same-as-deploying-it/)
+- 2026-11-02: [An Image Sequence Is Not a List of Files](/blog/an-image-sequence-is-not-a-list-of-files/)
 - 2026-10-26: [Tools Are Not a Pipeline Until They Work Together](/blog/tools-are-not-a-pipeline-until-they-work-together/)
 - 2026-10-20: [When Environment Variables Reference Themselves](/blog/when-environment-variables-reference-themselves/)
 - 2026-10-19: [Appending to PATH Is a Fold, Not an Assignment](/blog/appending-to-path-is-a-fold-not-an-assignment/)
